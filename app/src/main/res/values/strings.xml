@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">LibAct</string>
+    <string name="kanji_hieroglyph_ex">恋</string>
+    <string name="on_reading_title">Он:\n</string>
+    <string name="kun_reading_title">Кун:\n</string>
+    <string name="translate_title">Перевод</string>
+    <string name="translate_item_details_sample">00) details sample</string>
+
+
+    <string name="textSize">20sp</string>
+</resources>

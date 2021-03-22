@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="LibViewModel"
+            type="com.example.libact.modelsview.LibViewModel" />
+    </data>
+
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:scrollbars="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                >
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:translationZ="5dp"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.06"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.024">
+
+                <TextView
+                    android:id="@+id/hieroglyph_TV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="10dp"
+                    android:text="@string/kanji_hieroglyph_ex"
+                    android:textSize="80sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp"
+                >
+                <TextView
+                    android:layout_marginBottom="5dp"
+                    android:id="@+id/title_on_reading_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="50"
+                    android:text="@string/on_reading_title"
+                    android:textSize="@dimen/textSize"/>
+                <TextView
+                    android:id="@+id/title_kun_reading_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="50"
+                    android:text="@string/kun_reading_title"
+                    android:textSize="@dimen/textSize" />
+            </LinearLayout>
+            </LinearLayout>
+            <TextView
+                android:layout_marginBottom="5dp"
+                android:id="@+id/title_translate_tv"
+                android:layout_width="wrap_content"
+                android:padding="5dp"
+                android:layout_height="wrap_content"
+                android:text="@string/translate_title"
+                android:textSize="@dimen/textSize"/>
+            <ListView
+                android:id="@+id/detailsListView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/details_item"/>
+        </LinearLayout>
+
+</layout>
