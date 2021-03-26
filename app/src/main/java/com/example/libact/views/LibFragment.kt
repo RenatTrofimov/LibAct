@@ -11,17 +11,11 @@ import kotlinx.android.synthetic.main.lib_kanji_fragment.*
 
 class LibFragment():Fragment(R.layout.lib_kanji_fragment) {
     var libViewModel = LibViewModel()
-        get() {
-            return field
-        }
-        set(value) {
-            field = value
-        }
     lateinit var adapter:LibAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = LibAdapter(libViewModel.kanjiList)
+        adapter = LibAdapter(libViewModel.kanjiList)
         fragment_kanji_rv.adapter = adapter
     }
 }

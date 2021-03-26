@@ -1,29 +1,32 @@
 package com.example.libact.views
 
 import android.content.res.Configuration
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.recyclerview.widget.GridLayoutManager
-import com.example.libact.App
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.example.libact.R
 import com.example.libact.lib_recycler_view.LibAdapter
 import com.example.libact.modelsview.LibViewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private val libModel = LibViewModel()
+    lateinit var libModel : LibViewModel
+    private val libFragment = LibFragment()
+    private val detailsFragment = DetailsFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val libFragment = LibFragment()
-
-        val detailsFragment = DetailsFragment()
+        libModel = ViewModelProvider(this).get(LibViewModel::class.java)
         libFragment.libViewModel = libModel
         detailsFragment.libViewModel = libModel
 
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
+
         if (!isLandOrientation()){
             fragmentTransaction.replace(R.id.main_container, libFragment)
         }else{
@@ -31,9 +34,10 @@ class MainActivity : AppCompatActivity() {
             fragmentTransaction.replace(R.id.lnd_details_fragment, detailsFragment)
         }
         fragmentTransaction.commit()
+
     }
 
-    fun isLandOrientation():Boolean{
+    private fun isLandOrientation():Boolean{
         return resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     }
 }

@@ -7,14 +7,15 @@ import com.example.libact.R
 
 class LibVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private var kanjiField: TextView = itemView.findViewById(R.id.lib_item_hieroglyph_TV)
-    private var translationField: TextView = itemView.findViewById(R.id.lib_item_certain_translation_TV)
 
-    fun bind(kanji: Kanji){
+    private var translationField: TextView =
+        itemView.findViewById(R.id.lib_item_certain_translation_TV)
+
+    fun bind(kanji: Kanji) {
         kanjiField.text = kanji.hieroglyph
+
         translationField.text = kanji.translation
     }
 }
-
-
 
 
