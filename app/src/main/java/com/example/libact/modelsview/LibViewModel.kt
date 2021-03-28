@@ -9,41 +9,14 @@ class LibViewModel: ViewModel() {
 
     var translateList = ArrayList<String>()
     fun getLis() = translateList
-    fun setList(){
+    private fun setList(){
         translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
         translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-        translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-        translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-        translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-        translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-        translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-        translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-        translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-        translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-        translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-        translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-        translateList.add( "00) translate example  translate example  translate example  translate example  translate example  translate example  translate example  translate example ")
-
     }
 
-    fun createList():ArrayList<Kanji>{
+    private fun createList():ArrayList<Kanji>{
         val kanjiList: ArrayList<Kanji> = ArrayList<Kanji>();
         kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい, \nこい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ, \nアイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-        kanjiList.add(Kanji("恋", "こい", "アイ", "love"))
-
         return kanjiList
     }
     init{
