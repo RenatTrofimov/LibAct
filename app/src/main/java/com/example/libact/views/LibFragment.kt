@@ -24,6 +24,4 @@ class LibFragment():Fragment(R.layout.lib_kanji_fragment) {
         val adapter = LibAdapter(libViewModel.kanjiList)
         fragment_kanji_rv.adapter = adapter
     }
-
-
 }

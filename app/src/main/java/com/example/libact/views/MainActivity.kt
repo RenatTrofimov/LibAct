@@ -4,18 +4,20 @@ import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.libact.App
 import com.example.libact.R
 import com.example.libact.lib_recycler_view.LibAdapter
 import com.example.libact.modelsview.LibViewModel
 
 class MainActivity : AppCompatActivity() {
 
-    val libModel = LibViewModel()
+    private val libModel = LibViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val libFragment = LibFragment()
+
         val detailsFragment = DetailsFragment()
         libFragment.libViewModel = libModel
         detailsFragment.libViewModel = libModel

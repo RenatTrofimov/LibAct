@@ -7,10 +7,11 @@ class Kanji(val hieroglyph: String,
             val kun: String,
             val translation: String) {
 
+
 }
 @Entity(tableName = "kanji")
 data class KanjiDraw (
-    @PrimaryKey val kanjiId: Int,
+    @PrimaryKey(autoGenerate = true)val kanjiId: Int,
     @ColumnInfo(name = "hieroglyph") val hieroglyph: String
 )
 @Entity
@@ -28,7 +29,7 @@ interface KanjiDao {
     @Query("SELECT * FROM kanji WHERE kanjiId IN (:kanjiIds)")
     fun loadAllByIds(kanjiIds: IntArray): List<KanjiDraw>
 
-    @Query("SELECT * FROM kanji WHERE hieroglyph="+"id")
+    @Query("SELECT * FROM kanji WHERE kanjiId = (:id)")
     fun findById(id: Int): KanjiDraw
 
     @Insert
