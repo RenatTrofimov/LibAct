@@ -12,7 +12,7 @@ import com.example.libact.Kanji
 import com.example.libact.R
 import java.util.*
 
-class LibVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class LibVH(itemView: View, val onClick: (Kanji) -> Unit) : RecyclerView.ViewHolder(itemView) {
     private var kanjiField: TextView = itemView.findViewById(R.id.lib_item_hieroglyph_TV)
     private var kunField: TextView = itemView.findViewById(R.id.lib_item_kun_TV)
     private var onField: TextView = itemView.findViewById(R.id.lib_item_on_TV)
@@ -22,6 +22,9 @@ class LibVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         kunField.text = kanji.kun
         onField.text = kanji.on
         translationField.text = kanji.translation
+        itemView.setOnClickListener {
+            onClick(kanji)
+        }
     }
 }
 

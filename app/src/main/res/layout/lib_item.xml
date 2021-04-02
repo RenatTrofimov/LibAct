@@ -3,11 +3,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:gravity="center"
-    android:background="?selectableItemBackground">
+    android:gravity="center">
 
     <androidx.cardview.widget.CardView
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -15,7 +13,11 @@
         android:layout_margin="5dp"
         app:cardCornerRadius="15dp"
         >
+        <!--
+        Убери два скрытых элемента потом
+        !-->
         <LinearLayout
+            android:background="?selectableItemBackground"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"

@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.libact.Kanji
 import com.example.libact.R
 
-class LibAdapter(private val LibList: ArrayList<Kanji>): RecyclerView.Adapter<LibVH>() {
+class LibAdapter(private val LibList: ArrayList<Kanji>, private val onClick: (Kanji) -> Unit): RecyclerView.Adapter<LibVH>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LibVH {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.lib_item, parent, false)
-        return LibVH(view)
+        return LibVH(view, onClick)
     }
 
     override fun getItemCount() = LibList.size
