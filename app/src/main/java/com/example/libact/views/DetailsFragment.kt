@@ -14,12 +14,6 @@ import kotlinx.android.synthetic.main.lib_details_fragment.*
 
 class DetailsFragment():Fragment(R.layout.details_item) {
     var libViewModel = LibViewModel()
-        get() {
-            return field
-        }
-        set(value) {
-            field = value
-        }
     private var _binding: LibDetailsFragmentBinding? = null
     private val binding get() = _binding!!
     override fun onCreateView(
@@ -28,6 +22,7 @@ class DetailsFragment():Fragment(R.layout.details_item) {
         savedInstanceState: Bundle?
     ): View? {
         _binding = LibDetailsFragmentBinding.inflate(inflater, container, false)
+        _binding!!.libViewModel = libViewModel
         return binding.root
     }
     override fun onDestroyView() {

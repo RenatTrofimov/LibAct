@@ -2,6 +2,7 @@ package com.example.libact.views
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.libact.Kanji
@@ -19,7 +20,7 @@ class LibFragment():Fragment(R.layout.lib_kanji_fragment) {
         fragment_kanji_rv.adapter = adapter
     }
     private fun adapterOnClick(kanji: Kanji) {
-
+        libViewModel.selectedKanji = kanji
     }
 
 }

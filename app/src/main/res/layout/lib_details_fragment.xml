@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="10dp"
-                    android:text="@string/kanji_hieroglyph_ex"
+                    android:text="@{LibViewModel.selectedKanji.hieroglyph}"
                     android:textSize="80sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -57,14 +57,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="50"
-                    android:text="@string/on_reading_title"
+                    android:text="@{LibViewModel.selectedKanji.on}"
                     android:textSize="@dimen/textSize"/>
                 <TextView
                     android:id="@+id/title_kun_reading_tv"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="50"
-                    android:text="@string/kun_reading_title"
+                    android:text="@{LibViewModel.selectedKanji.kun}"
                     android:textSize="@dimen/textSize" />
             </LinearLayout>
             </LinearLayout>
