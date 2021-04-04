@@ -1,19 +1,25 @@
 package com.example.libact.views
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.SimpleAdapter
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelStoreOwner
+import com.example.libact.App
+import com.example.libact.Kanji
 import com.example.libact.R
 import com.example.libact.databinding.LibDetailsFragmentBinding
 import com.example.libact.modelsview.LibViewModel
 import kotlinx.android.synthetic.main.lib_details_fragment.*
 
 class DetailsFragment():Fragment(R.layout.details_item) {
-    var libViewModel = LibViewModel()
+    lateinit var libViewModel:LibViewModel
     private var _binding: LibDetailsFragmentBinding? = null
     private val binding get() = _binding!!
     override fun onCreateView(
@@ -21,6 +27,8 @@ class DetailsFragment():Fragment(R.layout.details_item) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.i("LibViewModel", "Called ViewModelProvider.get")
+        libViewModel = ViewModelProvider(requireActivity()).get(LibViewModel::class.java)
         _binding = LibDetailsFragmentBinding.inflate(inflater, container, false)
         _binding!!.libViewModel = libViewModel
         return binding.root
@@ -31,7 +39,9 @@ class DetailsFragment():Fragment(R.layout.details_item) {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = context?.let { ArrayAdapter<String>(it,R.layout.details_item,R.id.details_tv,libViewModel.translateList) }
-        detailsListView.adapter = adapter
+    }
+    fun bind(){
+        binding.libViewModel = libViewModel
+        binding.invalidateAll()
     }
 }

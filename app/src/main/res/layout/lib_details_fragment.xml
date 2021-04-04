@@ -7,7 +7,9 @@
             name="LibViewModel"
             type="com.example.libact.modelsview.LibViewModel" />
     </data>
-
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
         <LinearLayout android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -55,14 +57,15 @@
                     android:layout_marginBottom="5dp"
                     android:id="@+id/title_on_reading_tv"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="50"
                     android:text="@{LibViewModel.selectedKanji.on}"
                     android:textSize="@dimen/textSize"/>
+
                 <TextView
                     android:id="@+id/title_kun_reading_tv"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="50"
                     android:text="@{LibViewModel.selectedKanji.kun}"
                     android:textSize="@dimen/textSize" />
@@ -76,11 +79,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/translate_title"
                 android:textSize="@dimen/textSize"/>
-            <ListView
-                android:id="@+id/detailsListView"
+            <TextView
+                android:layout_marginBottom="5dp"
+                android:id="@+id/translate_tv"
                 android:layout_width="match_parent"
+                android:padding="5dp"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/details_item"/>
+                android:text="@{LibViewModel.selectedKanji.translation}"
+                android:textSize="@dimen/textSize"/>
         </LinearLayout>
-
+        </ScrollView>
 </layout>

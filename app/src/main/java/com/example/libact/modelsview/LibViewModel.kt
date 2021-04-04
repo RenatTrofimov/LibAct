@@ -1,5 +1,6 @@
 package com.example.libact.modelsview
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.libact.App
@@ -11,26 +12,34 @@ import com.example.libact.views.MainActivity
 
 class LibViewModel: ViewModel() {
     //Views
-    lateinit var libView: LibFragment
-    lateinit var detailsView: DetailsFragment
-    lateinit var activity: MainActivity
+    private lateinit var libView: LibFragment
+    private lateinit var detailsView: DetailsFragment
+    private lateinit var activity: MainActivity
     //???
     var kanjiList = ArrayList<Kanji>()
     var translateList = ArrayList<String>()
     var selectedKanji:Kanji
 
     fun getLis() = translateList
-
-    fun sendDetails(){
-        
+    override fun onCleared() {
+        super.onCleared()
+        Log.i("LibViewModel", "LibViewModel destroyed!")
+    }
+    fun sendDetails(kanji:Kanji){
+        selectedKanji = kanji
+        if(activity.isLandOrientation()){
+            detailsView.bind()
+        }else{
+            activity.openDetailsFragment(detailsView)
+        }
     }
     private fun setList(){
         translateList.add(kanjiList[0].translation)
     }
     fun setViews(activity: MainActivity, detailsFragment: DetailsFragment, libFragment: LibFragment){
         libView = libFragment;
-        detailsView = detailsFragment;
-        this.activity = activity;
+        detailsView = detailsFragment
+        this.activity = activity
     }
     private fun createList():ArrayList<Kanji>{
         val kanjiList: ArrayList<Kanji> = ArrayList<Kanji>()
@@ -50,12 +59,12 @@ class LibViewModel: ViewModel() {
         kanjiList.add(Kanji("会", "カイ ", "あ(う)", "встречаться, встреча, собрание"))
         kanjiList.add(Kanji("住", "ジュウ, ヂュウ, チュウ", "す(む)", "жить, проживать где-л"))
         kanjiList.add(Kanji("", "", "", ""))
-
         return kanjiList
     }
     init{
         kanjiList = createList()
         selectedKanji = kanjiList[0]
         setList()
+        Log.i("LibViewModel", "LibViewModel created!")
     }
 }

@@ -23,35 +23,6 @@
             android:orientation="vertical"
             android:gravity="center"
             >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="15"
-                android:gravity="center"
-                android:visibility="gone"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/lib_item_kun_TV"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="kun"
-                    android:textSize="15sp"
-                    android:paddingHorizontal="10dp"
-                    />
-                <TextView
-                    android:id="@+id/lib_item_on_TV"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="on"
-                    android:textSize="15sp"
-                    android:paddingHorizontal="10dp"
-                    />
-            </LinearLayout>
             <TextView
                 android:id="@+id/lib_item_hieroglyph_TV"
                 android:layout_width="wrap_content"
@@ -60,15 +31,6 @@
                 android:text="恋"
                 android:textSize="80sp"
                 android:paddingHorizontal="10dp"
-                />
-            <TextView
-                android:id="@+id/lib_item_certain_translation_TV"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="15"
-                android:text="translation"
-                android:textSize="15sp"
-                android:visibility="gone"
                 />
         </LinearLayout>
 
