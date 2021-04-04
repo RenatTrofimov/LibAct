@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val libFragment = LibFragment()
         val detailsFragment = DetailsFragment()
+        libModel.setViews(this, detailsFragment, libFragment)
         libModel = ViewModelProviders.of(this).get(LibViewModel::class.java)
         libFragment.libViewModel = libModel
         detailsFragment.libViewModel = libModel

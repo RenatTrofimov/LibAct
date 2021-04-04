@@ -1,5 +1,7 @@
 package com.example.libact.views
 
+import com.example.libact.Kanji
+
 interface CellClickListener {
-    fun onCellClickListener()
+    fun onCellClickListener(kanji: Kanji)
 }
