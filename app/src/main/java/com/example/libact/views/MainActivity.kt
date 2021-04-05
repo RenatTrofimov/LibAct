@@ -3,11 +3,13 @@ package com.example.libact.views
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.view.SurfaceView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.example.libact.R
 import com.example.libact.modelsview.LibViewModel
+import com.example.libact.surface.SurfaceFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +20,15 @@ class MainActivity : AppCompatActivity() {
         Log.i("LibViewModel", "Called ViewModelProvider.get")
         val libModel = ViewModelProviders.of(this).get(LibViewModel::class.java)
         libModel.setViews(this, detailsFragment, libFragment)
-        landInit(libFragment, detailsFragment)
+        val surfaceFragment = SurfaceFragment()
+
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.main_container, surfaceFragment)
+        fragmentTransaction.commit()
+
+
+        //landInit(libFragment, detailsFragment)
     }
     private fun landInit(libFragment:LibFragment, detailsFragment:DetailsFragment){
         val fragmentManager = supportFragmentManager

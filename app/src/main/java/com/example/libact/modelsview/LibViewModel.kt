@@ -17,10 +17,8 @@ class LibViewModel: ViewModel() {
     private lateinit var activity: MainActivity
     //???
     var kanjiList = ArrayList<Kanji>()
-    var translateList = ArrayList<String>()
     var selectedKanji:Kanji
 
-    fun getLis() = translateList
     override fun onCleared() {
         super.onCleared()
         Log.i("LibViewModel", "LibViewModel destroyed!")
@@ -32,9 +30,6 @@ class LibViewModel: ViewModel() {
         }else{
             activity.openDetailsFragment(detailsView)
         }
-    }
-    private fun setList(){
-        translateList.add(kanjiList[0].translation)
     }
     fun setViews(activity: MainActivity, detailsFragment: DetailsFragment, libFragment: LibFragment){
         libView = libFragment;
@@ -64,7 +59,6 @@ class LibViewModel: ViewModel() {
     init{
         kanjiList = createList()
         selectedKanji = kanjiList[0]
-        setList()
         Log.i("LibViewModel", "LibViewModel created!")
     }
 }
