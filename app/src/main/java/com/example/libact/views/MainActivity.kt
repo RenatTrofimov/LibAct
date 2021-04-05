@@ -20,15 +20,10 @@ class MainActivity : AppCompatActivity() {
         Log.i("LibViewModel", "Called ViewModelProvider.get")
         val libModel = ViewModelProviders.of(this).get(LibViewModel::class.java)
         libModel.setViews(this, detailsFragment, libFragment)
-        val surfaceFragment = SurfaceFragment()
-
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.main_container, surfaceFragment)
-        fragmentTransaction.commit()
 
 
-        //landInit(libFragment, detailsFragment)
+
+        landInit(libFragment, detailsFragment)
     }
     private fun landInit(libFragment:LibFragment, detailsFragment:DetailsFragment){
         val fragmentManager = supportFragmentManager
