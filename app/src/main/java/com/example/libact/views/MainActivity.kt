@@ -15,6 +15,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        testSurface(SurfaceFragment())
+
         val libFragment = LibFragment()
         val detailsFragment = DetailsFragment()
         Log.i("LibViewModel", "Called ViewModelProvider.get")
@@ -23,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        landInit(libFragment, detailsFragment)
+        //landInit(libFragment, detailsFragment)
     }
     private fun landInit(libFragment:LibFragment, detailsFragment:DetailsFragment){
         val fragmentManager = supportFragmentManager
@@ -38,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
         fragmentTransaction.commit()
     }
-    fun openDetailsFragment(fragment: DetailsFragment){
+    fun openDetailsFragment(fragment:  DetailsFragment){
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction().addToBackStack(null)
 
@@ -48,5 +51,13 @@ class MainActivity : AppCompatActivity() {
     }
     fun isLandOrientation():Boolean{
         return resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    }
+    fun testSurface(fragment: SurfaceFragment){
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+
+        fragmentTransaction.replace(R.id.main_container, fragment)
+
+        fragmentTransaction.commit()
     }
 }

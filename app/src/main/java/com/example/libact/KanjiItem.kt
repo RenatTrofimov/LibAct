@@ -6,9 +6,12 @@ class KanjiItem {
 }
 
 @Entity(tableName = "kanji")
-data class KanjiDraw (
-    @PrimaryKey(autoGenerate = true)val kanjiId: Int,
-    @ColumnInfo(name = "hieroglyph") val hieroglyph: String
+data class KanjiTable (
+    @PrimaryKey(autoGenerate = true) val id: Int,
+    @ColumnInfo(name = "hieroglyph") val hieroglyph: String,
+    @ColumnInfo(name = "on_reading") val on: String,
+    @ColumnInfo(name = "kun_reading") val kun: String,
+    @ColumnInfo(name = "translation") val translation: String
 )
 @Entity
 data class KanjiReading(
@@ -20,22 +23,22 @@ data class KanjiReading(
 @Dao
 interface KanjiDao {
     @Query("SELECT * FROM kanji")
-    fun getAll(): List<KanjiDraw>
+    fun getAll(): List<KanjiTable>
 
-    @Query("SELECT * FROM kanji WHERE kanjiId IN (:kanjiIds)")
-    fun loadAllByIds(kanjiIds: IntArray): List<KanjiDraw>
+    @Query("SELECT * FROM kanji WHERE id IN (:kanjiIds)")
+    fun loadAllByIds(kanjiIds: IntArray): List<KanjiTable>
 
-    @Query("SELECT * FROM kanji WHERE kanjiId = (:id)")
-    fun findById(id: Int): KanjiDraw
+    @Query("SELECT * FROM kanji WHERE id = (:id)")
+    fun findById(id: Int): KanjiTable
 
     @Insert
-    fun insertAll(vararg users: KanjiDraw)
+    fun insertAll(vararg users: KanjiTable)
 
     @Delete
-    fun delete(user: KanjiDraw)
+    fun delete(user: KanjiTable)
 }
 
-@Database(entities = [KanjiDraw::class], version = 1)
+@Database(entities = [KanjiTable::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): KanjiDao
 }

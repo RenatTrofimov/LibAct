@@ -2,6 +2,8 @@ package com.example.libact
 
 import android.app.Application
 import androidx.room.Room
+import androidx.sqlite.db.SupportSQLiteDatabase
+import javax.security.auth.callback.Callback
 
 class App: Application() {
     private lateinit var instance:App

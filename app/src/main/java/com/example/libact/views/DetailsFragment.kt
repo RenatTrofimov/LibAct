@@ -35,11 +35,14 @@ class DetailsFragment():Fragment(R.layout.details_item) {
     }
     override fun onDestroyView() {
         super.onDestroyView()
+
         _binding = null
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
     }
+
     fun bind(){
         binding.libViewModel = libViewModel
         binding.invalidateAll()
