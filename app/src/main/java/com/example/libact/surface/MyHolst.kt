@@ -1,16 +1,12 @@
 package com.example.libact.surface
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.PixelFormat
+import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import com.example.libact.Kanji
-import kotlinx.coroutines.NonCancellable.children
+import android.view.View
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -43,11 +39,29 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
         Log.i("SV", "surfaceDestroyed")
 
     }
-
     override fun surfaceCreated(holder: SurfaceHolder?) {
+
+        val tree = Tree<String>("0")
+        tree.addChild("1")
+        tree.addChild("2")
+        tree.addChild("3")
         thread = DrawThread(surfaceHolder)
+        thread?.sendTree(tree)
         thread?.setRunning(true)
         thread?.start()
+        setOnClickListener{
+            tree.addChild("3")
+            var lock = true
+            while (lock){
+                try{
+                    thread?.sendTree(tree)
+                    lock = false
+                }catch (e: ConcurrentModificationException){
+
+                }
+            }
+
+        }
        /* val canvas = surfaceHolder.lockCanvas(null)
 
         canvas.drawKanji("下",0f,0f, 200f, 200f)
@@ -56,64 +70,65 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
         Log.i("SV", "surfaceCreated")
 
     }
+
+    fun sendTree(tree: Tree<String>){
+        thread?.sendTree(tree)
+    }
 }
 
 class DrawThread(private val surfaceHolder: SurfaceHolder):Thread(){
     private var runFlag:Boolean = false
+    private var beChange:Boolean = true
     private var prevTime: Long = 0
-    val alphabet = "溜めを経て繰り出される技を「溜め技」と呼ぶ。 為. 読み方：ため別表記：タメ · 別の人や物事にとっての利益を意味する語。役に立つこと".toCharArray()
+    private var canvas: Canvas? = null
+    private var paint: Paint
+    private var buffer: Bitmap? = null
+    private var tree: Tree<String>
+    private val alphabetTestText = "溜めを経て繰り出される技を「溜め技」と呼ぶ。 為. 読み方：ため別表記：タメ · 別の人や物事にとっての利益を意味する語。役に立つこと".toCharArray()
     init{
         prevTime = System.currentTimeMillis()
+        paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        paint.color = Color.BLACK
+        tree = Tree<String>("0")
+
     }
 
     override fun run() {
         super.run()
-        var canvas: Canvas?
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        var intCount:Int=0
-        paint.color = Color.BLACK
         while (runFlag){
-            val now = System.currentTimeMillis()
+            /*val now = System.currentTimeMillis()
             val elapsedTime = now - prevTime
 
-            if(elapsedTime>160){
-                if(alphabet.size-1>intCount)
-                    intCount++
-                else{
-                    intCount = 0
-                }
+            if(elapsedTime>320){
+
                 prevTime = now
-            }
-            canvas = null
-            try{
-                canvas = surfaceHolder.lockCanvas(null)
-            }finally {
-                if(canvas!=null){
-                    paint.setTextSize(intCount.toFloat())
-                    canvas.drawColor(Color.WHITE)
-
-
-
-                    //canvas.drawKanji(alphabet[intCount].toString(),0f,0f,canvas.width.toFloat(),canvas.height.toFloat())
-                    surfaceHolder.unlockCanvasAndPost(canvas)
+            }*/
+                if(beChange){
+                    beChange = false
+                    canvas = null
+                    try{
+                        canvas = surfaceHolder.lockCanvas(null)
+                    }finally {
+                        if(canvas!=null){
+                            canvas!!.draw(tree)
+                            surfaceHolder.unlockCanvasAndPost(canvas)
+                        }
+                    }
                 }
-            }
+
         }
     }
-
     fun setRunning(run: Boolean) {
         runFlag = run
     }
-    fun draw(canvas: Canvas, paint: Paint): Canvas {
-
-        return canvas
+    fun sendTree(tree: Tree<String>){
+        beChange = true
+        this.tree = tree
     }
 }
-fun Canvas.drawRoot(list:ArrayList<String>){
-
-    val width = width/(list.size - 1)
-    val height = height/2
-
+fun Canvas.draw(tree: Tree<String>){
+    drawColor(Color.WHITE)
+    drawRoot(tree)
 }
 fun Canvas.drawKanji(text:String, cx:Float, cy:Float, width: Float, height: Float){
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -124,7 +139,7 @@ fun Canvas.drawKanji(text:String, cx:Float, cy:Float, width: Float, height: Floa
         height/2
     }
     paint.isAntiAlias = true
-    paint.textSize = height*0.8f
+    paint.textSize = radius*2*0.8f
     paint.color = Color.RED
 
     drawCircle(cx+radius, cy+radius, radius, paint)
@@ -138,15 +153,26 @@ fun Canvas.drawKanji(text:String, cx:Float, cy:Float, width: Float, height: Floa
     TreeMap<Int,Int>()
 
 }
+fun Canvas.drawRoot(tree:Tree<String>){
+    tree.setCords(width.toFloat(), height.toFloat())
+    tree.drawAll(this)
+}
 ///Мои пытки в деревья, на будущее
 class Tree<T>(rootData:T){
     private var root = Node<T>()
     private var maxDepth:Int = 1
+    private val points:ArrayList<PointF>
     init{
         root.data = rootData
         root.children = ArrayList<Node<T>>()
+        points = ArrayList<PointF>()
     }
-    fun addChild(child:Node<T>){
+    fun getChildNum():Int{
+        return root.children!!.size
+    }
+    fun addChild(data:T){
+        val child = Node<T>()
+        child.data = data
         if(root.children!!.isEmpty()){
             maxDepth++
         }
@@ -165,18 +191,28 @@ class Tree<T>(rootData:T){
     }
     fun getMaxRootLevel():Int{
         maxDepth = 0
+        points.clear()
         if(root.children!!.isNotEmpty()){
             val list = ArrayList<Int>()
+
             root.depth = maxDepth
             root.children!!.forEach {
+                points.add(PointF(root.floatX, root.floatY))
                 list.add(getNextRootLevel(maxDepth+1, it))
+                points.add(PointF(root.floatX, (root.floatY+it.floatY)/2))
+                points.add(PointF(it.floatX, (root.floatY+it.floatY)/2))
+                points.add(PointF(it.floatX, it.floatY))
+                points.add(PointF(it.floatX, (root.floatY+it.floatY)/2))
+                points.add(PointF(root.floatX, (root.floatY+it.floatY)/2))
+
             }
+            maxDepth = list.max()!!
         }
         return maxDepth
     }
 
     private fun getNextRootLevel(level:Int, children:Node<T>):Int{
-        if(children.children!!.isNotEmpty()){
+        if(children.children != null && children.children!!.isNotEmpty()){
             val list = ArrayList<Int>()
             children.depth = level
             children.children!!.forEach {
@@ -184,6 +220,29 @@ class Tree<T>(rootData:T){
             }
         }
         return level
+    }
+    fun setCords(weight: Float, height: Float){
+        root.floatX = weight/2
+        val step = 1f/getChildNum()
+        var k = 0f
+        root.children!!.forEach {
+            it.floatX = weight*k
+            it.floatY = height/2
+            k+=step
+        }
+    }
+
+    fun drawAll(canvas: Canvas){
+        val width = canvas.width/(getChildNum()).toFloat()
+        val height = canvas.height/(getMaxRootLevel()).toFloat()
+        canvas.drawKanji(root.data.toString(), root.floatX, root.floatY,width, height)
+        root.children!!.forEach {
+            canvas.drawKanji(it.data.toString(), it.floatX, it.floatY,width, height)
+        }
+        val paintLine = Paint()
+        paintLine.color = Color.BLACK
+        for (i in 0..points.size-2)
+            canvas.drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y, paintLine)
     }
 }
 class Node<T> {

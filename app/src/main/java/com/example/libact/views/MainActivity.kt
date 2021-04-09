@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        testSurface(SurfaceFragment())
+        //testSurface(SurfaceFragment())
 
         val libFragment = LibFragment()
         val detailsFragment = DetailsFragment()
@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        //landInit(libFragment, detailsFragment)
+        landInit(libFragment, detailsFragment)
     }
     private fun landInit(libFragment:LibFragment, detailsFragment:DetailsFragment){
         val fragmentManager = supportFragmentManager
