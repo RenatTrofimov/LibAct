@@ -50,6 +50,7 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
         thread?.setRunning(true)
         thread?.start()
         setOnClickListener{
+            this.setZOrderOnTop(true)
             tree.addChild("3")
             var lock = true
             while (lock){
@@ -60,17 +61,15 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
 
                 }
             }
-
         }
-       /* val canvas = surfaceHolder.lockCanvas(null)
-
-        canvas.drawKanji("下",0f,0f, 200f, 200f)
-
-        surfaceHolder.unlockCanvasAndPost(canvas)*/
         Log.i("SV", "surfaceCreated")
-
     }
-
+    fun getCanvas():Canvas{
+        return surfaceHolder.lockCanvas(null)
+    }
+    fun setCanvas(canvas: Canvas){
+        surfaceHolder.unlockCanvasAndPost(canvas)
+    }
     fun sendTree(tree: Tree<String>){
         thread?.sendTree(tree)
     }
@@ -82,27 +81,17 @@ class DrawThread(private val surfaceHolder: SurfaceHolder):Thread(){
     private var prevTime: Long = 0
     private var canvas: Canvas? = null
     private var paint: Paint
-    private var buffer: Bitmap? = null
     private var tree: Tree<String>
-    private val alphabetTestText = "溜めを経て繰り出される技を「溜め技」と呼ぶ。 為. 読み方：ため別表記：タメ · 別の人や物事にとっての利益を意味する語。役に立つこと".toCharArray()
     init{
         prevTime = System.currentTimeMillis()
         paint = Paint(Paint.ANTI_ALIAS_FLAG)
         paint.color = Color.BLACK
         tree = Tree<String>("0")
-
     }
 
     override fun run() {
         super.run()
         while (runFlag){
-            /*val now = System.currentTimeMillis()
-            val elapsedTime = now - prevTime
-
-            if(elapsedTime>320){
-
-                prevTime = now
-            }*/
                 if(beChange){
                     beChange = false
                     canvas = null
@@ -115,7 +104,6 @@ class DrawThread(private val surfaceHolder: SurfaceHolder):Thread(){
                         }
                     }
                 }
-
         }
     }
     fun setRunning(run: Boolean) {
@@ -194,23 +182,15 @@ class Tree<T>(rootData:T){
         points.clear()
         if(root.children!!.isNotEmpty()){
             val list = ArrayList<Int>()
-
             root.depth = maxDepth
             root.children!!.forEach {
-                points.add(PointF(root.floatX, root.floatY))
+                setPath(it)
                 list.add(getNextRootLevel(maxDepth+1, it))
-                points.add(PointF(root.floatX, (root.floatY+it.floatY)/2))
-                points.add(PointF(it.floatX, (root.floatY+it.floatY)/2))
-                points.add(PointF(it.floatX, it.floatY))
-                points.add(PointF(it.floatX, (root.floatY+it.floatY)/2))
-                points.add(PointF(root.floatX, (root.floatY+it.floatY)/2))
-
             }
             maxDepth = list.max()!!
         }
         return maxDepth
     }
-
     private fun getNextRootLevel(level:Int, children:Node<T>):Int{
         if(children.children != null && children.children!!.isNotEmpty()){
             val list = ArrayList<Int>()
@@ -221,8 +201,16 @@ class Tree<T>(rootData:T){
         }
         return level
     }
+    private fun setPath(it:Node<T>){
+        points.add(PointF(root.floatX + root.floatX/2, root.floatY + root.floatX/2 ))
+        points.add(PointF(root.floatX + root.floatX/2, (root.floatY+it.floatY)/2 + root.floatX/2))
+        points.add(PointF(it.floatX + root.floatX/2, (root.floatY+it.floatY)/2 + root.floatX/2))
+        points.add(PointF(it.floatX + root.floatX/2, it.floatY))
+        points.add(PointF(it.floatX + root.floatX/2, (root.floatY+it.floatY )/2 + root.floatX/2))
+        points.add(PointF(root.floatX + root.floatX/2, (root.floatY+it.floatY)/2 + root.floatX/2))
+    }
     fun setCords(weight: Float, height: Float){
-        root.floatX = weight/2
+        root.floatX = weight/2f - weight/getChildNum()/2
         val step = 1f/getChildNum()
         var k = 0f
         root.children!!.forEach {
@@ -234,15 +222,17 @@ class Tree<T>(rootData:T){
 
     fun drawAll(canvas: Canvas){
         val width = canvas.width/(getChildNum()).toFloat()
-        val height = canvas.height/(getMaxRootLevel()).toFloat()
+        val height = canvas.height/2f
+        getMaxRootLevel()
+        val paintLine = Paint(Color.BLACK)
+        paintLine.strokeWidth = 15f
+        for (i in 0..points.size-2)
+            canvas.drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y, paintLine)
         canvas.drawKanji(root.data.toString(), root.floatX, root.floatY,width, height)
         root.children!!.forEach {
             canvas.drawKanji(it.data.toString(), it.floatX, it.floatY,width, height)
         }
-        val paintLine = Paint()
-        paintLine.color = Color.BLACK
-        for (i in 0..points.size-2)
-            canvas.drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y, paintLine)
+
     }
 }
 class Node<T> {
