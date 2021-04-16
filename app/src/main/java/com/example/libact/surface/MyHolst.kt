@@ -2,6 +2,7 @@ package com.example.libact.surface
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.SurfaceHolder
@@ -9,7 +10,14 @@ import android.view.SurfaceView
 import android.view.View
 import java.util.*
 import kotlin.collections.ArrayList
+interface OnDrawListener{
 
+    fun draw(canvas:Canvas)
+
+    fun getListener():OnDrawListener{
+        return this
+    }
+}
 
 class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context, attributeSet), SurfaceHolder.Callback{
     private var thread:DrawThread? = null
@@ -25,7 +33,6 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
-
         thread?.setRunning(false)
         var lock = true
         while (lock){
@@ -40,87 +47,76 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
 
     }
     override fun surfaceCreated(holder: SurfaceHolder?) {
-
+        initTread()
+        Log.i("SV", "surfaceCreated")
+    }
+    private fun initTread(){
         val tree = Tree<String>("0")
         tree.addChild("1")
         tree.addChild("2")
         tree.addChild("3")
+        val example = Example()
+
+        val sendThing = example
+
         thread = DrawThread(surfaceHolder)
-        thread?.sendTree(tree)
+        thread?.send(sendThing)
         thread?.setRunning(true)
         thread?.start()
-        setOnClickListener{
-            this.setZOrderOnTop(true)
-            tree.addChild("3")
-            var lock = true
-            while (lock){
-                try{
-                    thread?.sendTree(tree)
-                    lock = false
-                }catch (e: ConcurrentModificationException){
 
-                }
-            }
+        setOnClickListener{
+            thread?.send(sendThing)
         }
-        Log.i("SV", "surfaceCreated")
     }
-    fun getCanvas():Canvas{
+    fun getCanvas():Canvas?{
         return surfaceHolder.lockCanvas(null)
     }
     fun setCanvas(canvas: Canvas){
         surfaceHolder.unlockCanvasAndPost(canvas)
     }
-    fun sendTree(tree: Tree<String>){
-        thread?.sendTree(tree)
+    fun <T:OnDrawListener>send(thing: T){
+        thread?.send(thing)
     }
 }
 
-class DrawThread(private val surfaceHolder: SurfaceHolder):Thread(){
+class DrawThread(private val surfaceHolder: SurfaceHolder):Thread() {
     private var runFlag:Boolean = false
     private var beChange:Boolean = true
-    private var prevTime: Long = 0
     private var canvas: Canvas? = null
-    private var paint: Paint
-    private var tree: Tree<String>
+    private var onDrawListener:OnDrawListener? = null
+    private var paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     init{
-        prevTime = System.currentTimeMillis()
-        paint = Paint(Paint.ANTI_ALIAS_FLAG)
         paint.color = Color.BLACK
-        tree = Tree<String>("0")
     }
-
     override fun run() {
         super.run()
         while (runFlag){
-                if(beChange){
-                    beChange = false
-                    canvas = null
-                    try{
-                        canvas = surfaceHolder.lockCanvas(null)
-                    }finally {
-                        if(canvas!=null){
-                            canvas!!.draw(tree)
-                            surfaceHolder.unlockCanvasAndPost(canvas)
-                        }
+            if(beChange){
+                beChange = false
+                canvas = null
+                try{
+                    canvas = surfaceHolder.lockCanvas(null)
+                }finally {
+                    if(canvas!=null){
+                        onDrawListener?.draw(canvas!!)
+                        surfaceHolder.unlockCanvasAndPost(canvas)
                     }
                 }
+            }
         }
     }
     fun setRunning(run: Boolean) {
         runFlag = run
     }
-    fun sendTree(tree: Tree<String>){
+    fun <T:OnDrawListener>send(thing: T){
         beChange = true
-        this.tree = tree
+        onDrawListener = thing.getListener()
     }
 }
-fun Canvas.draw(tree: Tree<String>){
-    drawColor(Color.WHITE)
-    drawRoot(tree)
-}
+
+
 fun Canvas.drawKanji(text:String, cx:Float, cy:Float, width: Float, height: Float){
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-
     val radius = if (height>width){
         width/2
     } else{
@@ -139,14 +135,24 @@ fun Canvas.drawKanji(text:String, cx:Float, cy:Float, width: Float, height: Floa
     paint.alpha = 255
     drawText(text, cx+radius*2*0.1f, cy+radius*2*0.8f, paint)
     TreeMap<Int,Int>()
+}
+
+class Example:OnDrawListener {
+
+    override fun draw(canvas: Canvas) {
+        canvas.drawColor(Color.WHITE)
+        val paint = Paint()
+        paint.color = Color.BLACK
+        paint.textSize = canvas.height*0.8f
+        canvas.drawText("1", 0f, canvas.height*0.8f, paint)
+    }
 
 }
-fun Canvas.drawRoot(tree:Tree<String>){
-    tree.setCords(width.toFloat(), height.toFloat())
-    tree.drawAll(this)
-}
 ///Мои пытки в деревья, на будущее
-class Tree<T>(rootData:T){
+
+
+
+class Tree<T>(rootData:T):OnDrawListener{
     private var root = Node<T>()
     private var maxDepth:Int = 1
     private val points:ArrayList<PointF>
@@ -220,7 +226,9 @@ class Tree<T>(rootData:T){
         }
     }
 
-    fun drawAll(canvas: Canvas){
+    override fun draw(canvas: Canvas) {
+        canvas.drawColor(Color.WHITE)
+        setCords(canvas.width.toFloat(), canvas.height.toFloat())
         val width = canvas.width/(getChildNum()).toFloat()
         val height = canvas.height/2f
         getMaxRootLevel()
@@ -232,7 +240,6 @@ class Tree<T>(rootData:T){
         root.children!!.forEach {
             canvas.drawKanji(it.data.toString(), it.floatX, it.floatY,width, height)
         }
-
     }
 }
 class Node<T> {

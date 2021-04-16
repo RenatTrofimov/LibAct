@@ -16,19 +16,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //testSurface(SurfaceFragment())
+        testSurface(SurfaceFragment())
 
+        //landInit()
+    }
+    private fun landInit(){
         val libFragment = LibFragment()
         val detailsFragment = DetailsFragment()
+
         Log.i("LibViewModel", "Called ViewModelProvider.get")
+
         val libModel = ViewModelProviders.of(this).get(LibViewModel::class.java)
+
         libModel.setViews(this, detailsFragment, libFragment)
 
-
-
-        landInit(libFragment, detailsFragment)
-    }
-    private fun landInit(libFragment:LibFragment, detailsFragment:DetailsFragment){
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
 
@@ -44,9 +45,7 @@ class MainActivity : AppCompatActivity() {
     fun openDetailsFragment(fragment:  DetailsFragment){
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction().addToBackStack(null)
-
         fragmentTransaction.replace(R.id.main_container, fragment)
-
         fragmentTransaction.commit()
     }
     fun isLandOrientation():Boolean{
