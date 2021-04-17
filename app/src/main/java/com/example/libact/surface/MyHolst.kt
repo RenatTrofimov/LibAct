@@ -265,7 +265,7 @@ class Example:OnDrawListener {
             "空" +
             "立" +"紙" +"耳" +"聞" +"花" +"行" +"西" +"見" +"言" +"話" +"語" +"読" +"買" +"赤" +"走" + "足" + "車" + "近" + "週" + "道" + "金" + "銀" + "長" + "間" + "雨" + "電" + "食" + "飲" + "駅" + "高" + "魚").toCharArray()
     private var index = 0
-    val en = Entity("紙")
+    private val en = Entity("紙")
     override fun draw(canvas: Canvas) {
 
 
