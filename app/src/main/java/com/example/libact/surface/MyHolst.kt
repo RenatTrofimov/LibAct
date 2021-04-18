@@ -10,12 +10,14 @@ import android.view.SurfaceView
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.ArrayList
+import kotlin.math.abs
+import kotlin.math.min
 
 
 interface OnDrawListener{
 
     fun draw(canvas: Canvas)
-    fun sendTouch(point:PointF)
+    fun sendTouch(event: MotionEvent)
     fun getListener():OnDrawListener{
         return this
     }
@@ -55,9 +57,9 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
     }
     private fun initTread(){
 
-        tree.addChild("1")
-        tree.addChild("2")
-        tree.addChild("3")
+        tree.addChild("A")
+        tree.addChild("W")
+        tree.addChild("P")
 
 
         val sendThing = example
@@ -71,35 +73,7 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-
-        when(event!!.action){
-
-            MotionEvent.ACTION_DOWN -> {
-                Log.i("SV", "down")
-
-            }
-            MotionEvent.ACTION_MOVE -> {
-                if(thread!!.isDrawing()){
-                    thread!!.startDraw()
-                }
-                Log.i("SV", "move")
-                example.sendTouch(PointF(event.x, event.y))
-            }
-            MotionEvent.ACTION_UP ->{
-                Log.i("SV", "up")
-                example.sendTouch(PointF(event.x, event.y))
-            }
-            MotionEvent.ACTION_POINTER_DOWN -> {
-
-            }
-
-            MotionEvent.ACTION_BUTTON_PRESS -> {
-
-            }
-            else -> {
-                Log.i("SV", "false")
-            }
-        }
+        example.sendTouch(event!!)
         return super.onTouchEvent(event)
     }
     private fun <T : OnDrawListener>send(thing: T){
@@ -123,9 +97,7 @@ class DrawThread(private val surfaceHolder: SurfaceHolder):Thread() {
     private var canvas: Canvas? = null
     private var onDrawListener:OnDrawListener? = null
     private var paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    init{
-        paint.color = Color.BLACK
-    }
+
     override fun run() {
         super.run()
         while (runFlag){
@@ -186,99 +158,12 @@ fun Canvas.drawKanji(text: String, cx: Float, cy: Float, width: Float, height: F
 
 class Example:OnDrawListener {
     private var bitmap:Bitmap? = null
-    private val alphabet = ("一" + "七" +
-            "万" +
-            "三" +
-            "上" +
-            "下" +
-            "中" +
-            "九" +
-            "二" +
-            "五" +
-            "人" +
-            "今" +
-            "休" +
-            "会" +
-            "住" +
-            "何" +
-            "先" +
-            "入" +
-            "八" +
-            "六" +
-            "円" +
-            "出" +
-            "分" +
-            "前" +
-            "北" +
-            "十" +
-            "千" +
-            "午" +
-            "半" +
-            "南" +
-            "友" +
-            "口" +
-            "古" +
-            "右" +
-            "名" +
-            "四" +
-            "国" +
-            "土" +
-            "夕" +
-            "外" +
-            "多" +
-            "夜" +
-            "大" +
-            "天" +
-            "女" +
-            "子" +
-            "学" +
-            "安" +
-            "家" +
-            "小" +
-            "少" +
-            "山" +
-            "川" +
-            "左" +
-            "年" +
-            "広" +
-            "店" +
-            "後" +
-            "思" +
-            "手" +
-            "新" +
-            "日" +
-            "昼" +
-            "時" +
-            "書" +
-            "月" +
-            "有" +
-            "朝" +
-            "木" +
-            "本" +
-            "来" +
-            "東" +
-            "校" +
-            "歩" +
-            "母" +
-            "毎" +
-            "気" +
-            "水" +
-            "火" +
-            "父" +
-            "生" +
-            "男" +
-            "白" +
-            "百" +
-            "目" +
-            "知" +
-            "社" +
-            "私" +
-            "空" +
-            "立" +"紙" +"耳" +"聞" +"花" +"行" +"西" +"見" +"言" +"話" +"語" +"読" +"買" +"赤" +"走" + "足" + "車" + "近" + "週" + "道" + "金" + "銀" + "長" + "間" + "雨" + "電" + "食" + "飲" + "駅" + "高" + "魚").toCharArray()
     private var index = 0
     private val en = ArrayList<Entity>()
     init {
         en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
     }
     override fun draw(canvas: Canvas) {
         canvas.drawColor(Color.WHITE)
@@ -288,14 +173,57 @@ class Example:OnDrawListener {
         //canvas.drawBitmap(en.bitmap, null, Rect(0,0,canvas.width, canvas.height), Paint())
     }
 
-    override fun sendTouch(point: PointF) {
-        for(en in en.iterator()){
-            if(en.checkCollusion(point))
-                if(en.isSelected)
-                    en.setPosition(point)
-                else
-                    en.isSelected = true
+    override fun sendTouch(event: MotionEvent) {
+
+        val point = PointF(event.x,event.y)
+        val pointerIndex= event.action and MotionEvent.ACTION_POINTER_INDEX_MASK shr MotionEvent.ACTION_POINTER_INDEX_SHIFT
+        val pointerId = event.getPointerId(pointerIndex);
+        when(event.actionMasked){
+            MotionEvent.ACTION_DOWN -> {
+                Log.i("SV", "down")
+
+                for(en in en.iterator()){
+                    en.isSelected = en.checkCollusion(point)
+                    if( en.checkCollusion(point))
+                        break
+                }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                Log.i("SV", "$pointerIndex")
+                for(en in en.iterator()){
+                    if(en.isSelected)
+                        when(pointerIndex){
+                            0 ->{
+                                en.reSize(point, PointF(0f,0f))
+                            }
+                            1 ->{
+                                en.reSize(  point,
+                                    PointF( event.getX(0),
+                                        event.getY(0))
+                                )
+                            }
+                        }
+                }
+            }
+            MotionEvent.ACTION_UP ->{
+                Log.i("SV", "up")
+                for(en in en.iterator()){
+                    if(en.isSelected)
+                        en.isSelected=false
+                }
+            }
+            MotionEvent.ACTION_POINTER_DOWN ->{
+
+            }
+            MotionEvent.ACTION_POINTER_UP ->{
+
+            }
+
+            else -> {
+//                Log.i("SV", "${}")
+            }
         }
+
 
     }
 
@@ -304,7 +232,9 @@ class Example:OnDrawListener {
         var isSelected:Boolean = false
         private val pointsAnchor = ArrayList<PointF>()
         private val points = ArrayList<Float>()
-        private var bitmap:Bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888)
+        private val str:String = str
+        private var mainBitmap:Bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888)
+        private var border:Bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888)
         private var position = PointF(0f, 0f)
         private var anchorRadius = 20f
         private var canvasHeight = 0f
@@ -312,80 +242,99 @@ class Example:OnDrawListener {
 
         init{
             setBorder()
-            val canvas = Canvas(bitmap)
-            val paint = Paint()
-            paint.color = Color.BLACK
-            paint.textSize = bitmap.height.toFloat()
-            canvas.drawText(str, 0f, bitmap.height*0.9f, paint)
+            drawMainBitmap(300,300)
         }
         private fun setBorder() {
 
             pointsAnchor.clear()
             pointsAnchor.add(position)
-            pointsAnchor.add(PointF(position.x, position.y+bitmap.height.toFloat()))
-            pointsAnchor.add(PointF(position.x+bitmap.width.toFloat(), position.y+ bitmap.height.toFloat()))
-            pointsAnchor.add(PointF(position.x+bitmap.width.toFloat(), position.y))
+            pointsAnchor.add(PointF(position.x, position.y+mainBitmap.height.toFloat()))
+            pointsAnchor.add(PointF(position.x+mainBitmap.width.toFloat(), position.y+ mainBitmap.height.toFloat()))
+            pointsAnchor.add(PointF(position.x+mainBitmap.width.toFloat(), position.y))
+
             points.clear()
             points.add(position.x)
             points.add(position.y)
             points.add(position.x)
-            points.add(position.y+bitmap.height.toFloat())
+            points.add(position.y+mainBitmap.height.toFloat())
 
-            points.add(position.x+bitmap.width.toFloat())
-            points.add(position.y+bitmap.height.toFloat())
-            points.add(position.x+bitmap.width.toFloat())
+            points.add(position.x+mainBitmap.width.toFloat())
+            points.add(position.y+mainBitmap.height.toFloat())
+            points.add(position.x+mainBitmap.width.toFloat())
             points.add(position.y)
 
-            points.add(position.x+bitmap.width.toFloat())
+            points.add(position.x+mainBitmap.width.toFloat())
             points.add(position.y)
             points.add(position.x)
             points.add(position.y)
 
             points.add(position.x)
-            points.add(position.y+bitmap.height.toFloat())
-            points.add(position.x+bitmap.width.toFloat())
-            points.add(position.y+bitmap.height.toFloat())
+            points.add(position.y+mainBitmap.height.toFloat())
+            points.add(position.x+mainBitmap.width.toFloat())
+            points.add(position.y+mainBitmap.height.toFloat())
         }
-
+        @Throws(ArrayIndexOutOfBoundsException::class)
         private fun drawAnchorsAndBounds(canvas: Canvas){
+
             canvasHeight = canvas.height.toFloat()
             canvasWidth = canvas.width.toFloat()
-            canvas.drawLines(points.toFloatArray(), Paint())
-            val mutableIterator = pointsAnchor.iterator()
-            for (e in mutableIterator) {
-                canvas.drawCircle(e.x , e.y, anchorRadius, Paint())
+
+            try{
+                canvas.drawLines(points.toFloatArray(), Paint())
+                val mutableIterator = pointsAnchor.iterator()
+                for (e in mutableIterator) {
+                    canvas.drawCircle(e.x , e.y, anchorRadius, Paint())
+                }
+            }catch (e:ConcurrentModificationException ){
+                Log.i("Ex", "ConcurrentModificationException")
             }
+
+        }
+        fun reSize(point1: PointF, point2: PointF){
+            drawMainBitmap( abs((point1.x - point2.x).toInt()),
+                            abs((point1.y - point2.y).toInt())
+            )
+            setPosition(PointF(min(point1.x, point2.x), min(point1.y, point2.y)))
+        }
+        private fun drawMainBitmap(width: Int, height: Int){
+            val tempBitmap = Bitmap.createBitmap(width, height,Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(tempBitmap)
+            val paint = Paint()
+            paint.color = Color.BLACK
+            paint.textSize = tempBitmap.height.toFloat()
+            canvas.drawText(str, 0f, tempBitmap.height*0.9f, paint)
+            mainBitmap = tempBitmap
         }
         fun setPosition(position:PointF){
-            position.x = if(position.x - bitmap.width/2 < 0f){
+            position.x = if(position.x - mainBitmap.width/2 < 0f){
                 0f
             }else{
-                if(position.x + bitmap.width/2 > canvasWidth){
-                    canvasWidth - bitmap.width.toFloat()
+                if(position.x + mainBitmap.width/2 > canvasWidth){
+                    canvasWidth - mainBitmap.width.toFloat()
                 }else
-                position.x - bitmap.width/2
+                position.x - mainBitmap.width/2
             }
-            position.y = if(position.y - bitmap.height/2 < 0f){
+            position.y = if(position.y - mainBitmap.height/2 < 0f){
                 0f
             }else{
-                if(position.y + bitmap.height/2 > canvasHeight){
-                    canvasHeight - bitmap.height.toFloat()
+                if(position.y + mainBitmap.height/2 > canvasHeight){
+                    canvasHeight - mainBitmap.height.toFloat()
                 }else
-                    position.y - bitmap.height/2
+                    position.y - mainBitmap.height/2
             }
             this.position = position
             setBorder()
         }
         fun drawEntity(canvas: Canvas){
-            canvas.drawBitmap(bitmap, position.x, position.y, Paint())
+            canvas.drawBitmap(mainBitmap, position.x, position.y, Paint())
             if(isSelected){
                 drawAnchorsAndBounds(canvas)
             }
         }
         fun checkCollusion(point: PointF):Boolean{
-            return (point.x in position.x..position.x + bitmap.width
+            return (point.x in position.x..position.x + mainBitmap.width
                     &&
-                    point.y in position.y..position.y + bitmap.height)
+                    point.y in position.y..position.y + mainBitmap.height)
         }
 
     }
@@ -403,7 +352,7 @@ class Tree<T>(rootData: T):OnDrawListener{
         root.children = ArrayList<Node<T>>()
         points = ArrayList<PointF>()
     }
-    fun getChildNum():Int{
+    private fun getChildNum():Int{
         return root.children!!.size
     }
     fun addChild(data: T){
@@ -425,7 +374,7 @@ class Tree<T>(rootData: T):OnDrawListener{
             root = root.parent!!
         }
     }
-    fun getMaxRootLevel():Int{
+    private fun getMaxRootLevel():Int{
         maxDepth = 0
         points.clear()
         if(root.children!!.isNotEmpty()){
@@ -477,7 +426,7 @@ class Tree<T>(rootData: T):OnDrawListener{
             )
         )
     }
-    fun setCords(weight: Float, height: Float){
+    private fun setCords(weight: Float, height: Float){
         root.floatX = weight/2f - weight/getChildNum()/2
         val step = 1f/getChildNum()
         var k = 0f
@@ -504,7 +453,7 @@ class Tree<T>(rootData: T):OnDrawListener{
         }
     }
 
-    override fun sendTouch(point: PointF) {
+    override fun sendTouch(event: MotionEvent) {
 
     }
 }
