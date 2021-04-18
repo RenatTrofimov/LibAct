@@ -73,16 +73,26 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
         when(event!!.action){
+
+            MotionEvent.ACTION_DOWN -> {
+                Log.i("SV", "down")
+
+            }
             MotionEvent.ACTION_MOVE -> {
                 if(thread!!.isDrawing()){
                     thread!!.startDraw()
                 }
-
+                Log.i("SV", "move")
+                example.sendTouch(PointF(event.x, event.y))
+            }
+            MotionEvent.ACTION_UP ->{
+                Log.i("SV", "up")
                 example.sendTouch(PointF(event.x, event.y))
             }
             MotionEvent.ACTION_POINTER_DOWN -> {
 
             }
+
             MotionEvent.ACTION_BUTTON_PRESS -> {
 
             }
@@ -96,6 +106,7 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
         thread?.send(thing)
         thread?.setRunning(true)
         thread?.start()
+
     }
     fun getCanvas():Canvas?{
         return surfaceHolder.lockCanvas(null)
@@ -265,29 +276,39 @@ class Example:OnDrawListener {
             "空" +
             "立" +"紙" +"耳" +"聞" +"花" +"行" +"西" +"見" +"言" +"話" +"語" +"読" +"買" +"赤" +"走" + "足" + "車" + "近" + "週" + "道" + "金" + "銀" + "長" + "間" + "雨" + "電" + "食" + "飲" + "駅" + "高" + "魚").toCharArray()
     private var index = 0
-    private val en = Entity("紙")
+    private val en = ArrayList<Entity>()
+    init {
+        en.add(Entity("1"))
+    }
     override fun draw(canvas: Canvas) {
-
-
         canvas.drawColor(Color.WHITE)
-
-        en.drawEntity(canvas)
-
+        for(en in en.iterator()){
+            en.drawEntity(canvas)
+        }
         //canvas.drawBitmap(en.bitmap, null, Rect(0,0,canvas.width, canvas.height), Paint())
     }
 
     override fun sendTouch(point: PointF) {
-        en.setPosition(point)
+        for(en in en.iterator()){
+            if(en.checkCollusion(point))
+                if(en.isSelected)
+                    en.setPosition(point)
+                else
+                    en.isSelected = true
+        }
+
     }
 
 
     class Entity(str:String){
-        var isSelected:Boolean = true
+        var isSelected:Boolean = false
         private val pointsAnchor = ArrayList<PointF>()
         private val points = ArrayList<Float>()
         private var bitmap:Bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888)
         private var position = PointF(0f, 0f)
         private var anchorRadius = 20f
+        private var canvasHeight = 0f
+        private var canvasWidth = 0f
 
         init{
             setBorder()
@@ -327,26 +348,28 @@ class Example:OnDrawListener {
         }
 
         private fun drawAnchorsAndBounds(canvas: Canvas){
+            canvasHeight = canvas.height.toFloat()
+            canvasWidth = canvas.width.toFloat()
             canvas.drawLines(points.toFloatArray(), Paint())
-
-            pointsAnchor.forEach {
-                canvas.drawCircle(it.x , it.y, anchorRadius, Paint())
+            val mutableIterator = pointsAnchor.iterator()
+            for (e in mutableIterator) {
+                canvas.drawCircle(e.x , e.y, anchorRadius, Paint())
             }
         }
         fun setPosition(position:PointF){
             position.x = if(position.x - bitmap.width/2 < 0f){
                 0f
             }else{
-                if(position.x - bitmap.width/2 > bitmap.width){
-                    bitmap.width.toFloat()
+                if(position.x + bitmap.width/2 > canvasWidth){
+                    canvasWidth - bitmap.width.toFloat()
                 }else
                 position.x - bitmap.width/2
             }
             position.y = if(position.y - bitmap.height/2 < 0f){
                 0f
             }else{
-                if(position.y - bitmap.height/2 > bitmap.height){
-                    bitmap.height.toFloat()
+                if(position.y + bitmap.height/2 > canvasHeight){
+                    canvasHeight - bitmap.height.toFloat()
                 }else
                     position.y - bitmap.height/2
             }
@@ -358,6 +381,11 @@ class Example:OnDrawListener {
             if(isSelected){
                 drawAnchorsAndBounds(canvas)
             }
+        }
+        fun checkCollusion(point: PointF):Boolean{
+            return (point.x in position.x..position.x + bitmap.width
+                    &&
+                    point.y in position.y..position.y + bitmap.height)
         }
 
     }
