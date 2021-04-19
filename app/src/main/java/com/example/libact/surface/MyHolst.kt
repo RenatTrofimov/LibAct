@@ -157,14 +157,14 @@ fun Canvas.drawKanji(text: String, cx: Float, cy: Float, width: Float, height: F
 }
 
 class Example:OnDrawListener {
-    private var bitmap:Bitmap? = null
-    private var index = 0
     private val en = ArrayList<Entity>()
+    private val resizeLatch = false
     init {
         en.add(Entity("1"))
         en.add(Entity("2"))
         en.add(Entity("3"))
     }
+
     override fun draw(canvas: Canvas) {
         canvas.drawColor(Color.WHITE)
         for(en in en.iterator()){
@@ -174,14 +174,12 @@ class Example:OnDrawListener {
     }
 
     override fun sendTouch(event: MotionEvent) {
-
         val point = PointF(event.x,event.y)
-        val pointerIndex= event.action and MotionEvent.ACTION_POINTER_INDEX_MASK shr MotionEvent.ACTION_POINTER_INDEX_SHIFT
+        val pointerIndex= event.actionIndex
         val pointerId = event.getPointerId(pointerIndex);
         when(event.actionMasked){
             MotionEvent.ACTION_DOWN -> {
                 Log.i("SV", "down")
-
                 for(en in en.iterator()){
                     en.isSelected = en.checkCollusion(point)
                     if( en.checkCollusion(point))
@@ -189,17 +187,17 @@ class Example:OnDrawListener {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
-                Log.i("SV", "$pointerIndex")
+                Log.i("i", pointerIndex.toString())
                 for(en in en.iterator()){
                     if(en.isSelected)
                         when(pointerIndex){
                             0 ->{
-                                en.reSize(point, PointF(0f,0f))
+                                en.setPosition(point)
                             }
                             1 ->{
                                 en.reSize(  point,
-                                    PointF( event.getX(0),
-                                        event.getY(0))
+                                    PointF( event.getX(1),
+                                        event.getY(1))
                                 )
                             }
                         }
@@ -213,10 +211,10 @@ class Example:OnDrawListener {
                 }
             }
             MotionEvent.ACTION_POINTER_DOWN ->{
-
+                Log.i("SV", "PD")
             }
             MotionEvent.ACTION_POINTER_UP ->{
-
+                Log.i("SV", "PU")
             }
 
             else -> {
