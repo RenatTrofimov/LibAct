@@ -25,7 +25,7 @@ interface OnDrawListener{
 
 class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context, attributeSet), SurfaceHolder.Callback{
     private var thread:DrawThread? = null
-    val tree = Tree<String>("0")
+    private val tree = Tree<String>("0")
     val example = Example()
     private val surfaceHolder: SurfaceHolder = holder
     init{
@@ -61,7 +61,6 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
         tree.addChild("W")
         tree.addChild("P")
 
-
         val sendThing = example
 
         thread = DrawThread(surfaceHolder)
@@ -71,7 +70,6 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
             thread?.send(sendThing)
         }
     }
-
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         example.sendTouch(event!!)
         return super.onTouchEvent(event)
@@ -80,7 +78,6 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
         thread?.send(thing)
         thread?.setRunning(true)
         thread?.start()
-
     }
     fun getCanvas():Canvas?{
         return surfaceHolder.lockCanvas(null)
@@ -88,9 +85,7 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
     fun setCanvas(canvas: Canvas){
         surfaceHolder.unlockCanvasAndPost(canvas)
     }
-
 }
-
 class DrawThread(private val surfaceHolder: SurfaceHolder):Thread() {
     private var runFlag:Boolean = false
     private var beChange = AtomicBoolean(true)
@@ -114,7 +109,6 @@ class DrawThread(private val surfaceHolder: SurfaceHolder):Thread() {
             }
         }
     }
-
     fun startDraw(){
         beChange.set(true)
     }
@@ -187,20 +181,24 @@ class Example:OnDrawListener {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
-                Log.i("i", pointerIndex.toString())
+//                Log.i("i", "first ${event.x} and ${event.y}")
                 for(en in en.iterator()){
-                    if(en.isSelected)
-                        when(pointerIndex){
-                            0 ->{
-                                en.setPosition(point)
-                            }
-                            1 ->{
-                                en.reSize(  point,
-                                    PointF( event.getX(1),
-                                        event.getY(1))
+                    if(en.isSelected) {
+                        if (event.pointerCount > 1) {
+                            val secondTouch = MotionEvent.PointerCoords()
+                            event.getPointerCoords(1, secondTouch)
+//                            Log.i("i", "second ${secondTouch.x} and ${secondTouch.y}")
+                            en.reSize(
+                                point,
+                                PointF(
+                                    secondTouch.x,
+                                    secondTouch.y
                                 )
-                            }
+                            )
+                        } else {
+                            en.setPosition(point)
                         }
+                    }
                 }
             }
             MotionEvent.ACTION_UP ->{
@@ -216,7 +214,6 @@ class Example:OnDrawListener {
             MotionEvent.ACTION_POINTER_UP ->{
                 Log.i("SV", "PU")
             }
-
             else -> {
 //                Log.i("SV", "${}")
             }
@@ -278,10 +275,14 @@ class Example:OnDrawListener {
             canvasWidth = canvas.width.toFloat()
 
             try{
+                try{
                 canvas.drawLines(points.toFloatArray(), Paint())
                 val mutableIterator = pointsAnchor.iterator()
                 for (e in mutableIterator) {
                     canvas.drawCircle(e.x , e.y, anchorRadius, Paint())
+                 }
+                }catch(e:ArrayIndexOutOfBoundsException ){
+                    Log.i("Ex", "ArrayIndexOutOfBoundsException")
                 }
             }catch (e:ConcurrentModificationException ){
                 Log.i("Ex", "ConcurrentModificationException")
@@ -289,10 +290,12 @@ class Example:OnDrawListener {
 
         }
         fun reSize(point1: PointF, point2: PointF){
-            drawMainBitmap( abs((point1.x - point2.x).toInt()),
-                            abs((point1.y - point2.y).toInt())
-            )
-            setPosition(PointF(min(point1.x, point2.x), min(point1.y, point2.y)))
+            if(abs(point1.x - point2.x) in 1f..canvasWidth && abs(point1.y - point2.y) in 1f..canvasHeight)
+                drawMainBitmap( abs((point1.x - point2.x).toInt()),
+                                abs((point1.y - point2.y).toInt()))
+
+            this.position = PointF(min(point1.x, point2.x), min(point1.y, point2.y))
+            setBorder()
         }
         private fun drawMainBitmap(width: Int, height: Int){
             val tempBitmap = Bitmap.createBitmap(width, height,Bitmap.Config.ARGB_8888)
