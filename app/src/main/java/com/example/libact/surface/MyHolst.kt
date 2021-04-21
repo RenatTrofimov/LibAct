@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import kotlinx.coroutines.CoroutineScope
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.ArrayList
@@ -22,19 +23,46 @@ interface OnDrawListener{
         return this
     }
 }
+class MyHolstForTest(context: Context, attributeSet: AttributeSet): MyHolst(context, attributeSet){
+    private var example:Example? = null
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        example!!.sendTouch(event!!)
+        return super.onTouchEvent(event)
+    }
 
-class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context, attributeSet), SurfaceHolder.Callback{
-    private var thread:DrawThread? = null
-    private val tree = Tree<String>("0")
-    val example = Example()
+    override fun surfaceCreated(holder: SurfaceHolder?) {
+        super.surfaceCreated(holder)
+        setOnClickListener{
+            thread?.send(example!!)
+        }
+    }
+    fun send(thing: Example){
+        example = thing
+        super.send(example!!)
+    }
+
+
+}
+class MyHolstForTreeView(context: Context, attributeSet: AttributeSet): MyHolst(context, attributeSet){
+    private var tree = Tree<String>("0")
+    fun send(thing: Tree<String>){
+        tree = thing
+        super.send(thing)
+    }
+}
+
+open class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context, attributeSet), SurfaceHolder.Callback{
+    protected var thread:DrawThread? = null
+
     private val surfaceHolder: SurfaceHolder = holder
     init{
+        Log.i("SV", "init")
         this.surfaceHolder.addCallback(this)
         surfaceHolder.setFormat(PixelFormat.TRANSPARENT)
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-
+        Log.i("SV", "surfaceChanged")
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
@@ -51,38 +79,24 @@ class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context
         Log.i("SV", "surfaceDestroyed")
 
     }
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        initTread()
-        Log.i("SV", "surfaceCreated")
-    }
-    private fun initTread(){
-
-        tree.addChild("A")
-        tree.addChild("W")
-        tree.addChild("P")
-
-        val sendThing = example
-
+    fun <T:OnDrawListener>send(thing: T){
+        Log.i("SV", "send")
         thread = DrawThread(surfaceHolder)
-        send(sendThing)
-
-        setOnClickListener{
-            thread?.send(sendThing)
-        }
-    }
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        example.sendTouch(event!!)
-        return super.onTouchEvent(event)
-    }
-    private fun <T : OnDrawListener>send(thing: T){
         thread?.send(thing)
         thread?.setRunning(true)
         thread?.start()
     }
+    override fun surfaceCreated(holder: SurfaceHolder?) {
+        Log.i("SV", "surfaceCreated")
+    }
+
     fun getCanvas():Canvas?{
+        Log.i("SV", "getCanvas")
         return surfaceHolder.lockCanvas(null)
+
     }
     fun setCanvas(canvas: Canvas){
+        Log.i("SV", "getCanvas")
         surfaceHolder.unlockCanvasAndPost(canvas)
     }
 }
@@ -91,7 +105,6 @@ class DrawThread(private val surfaceHolder: SurfaceHolder):Thread() {
     private var beChange = AtomicBoolean(true)
     private var canvas: Canvas? = null
     private var onDrawListener:OnDrawListener? = null
-    private var paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     override fun run() {
         super.run()
@@ -171,7 +184,7 @@ class Example:OnDrawListener {
         val point = PointF(event.x,event.y)
         val pointerIndex= event.actionIndex
         val pointerId = event.getPointerId(pointerIndex);
-        when(event.actionMasked){
+        when(event.action){
             MotionEvent.ACTION_DOWN -> {
                 Log.i("SV", "down")
                 for(en in en.iterator()){
@@ -230,8 +243,10 @@ class Example:OnDrawListener {
         private val str:String = str
         private var mainBitmap:Bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888)
         private var border:Bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888)
+
         private var position = PointF(0f, 0f)
         private var anchorRadius = 20f
+
         private var canvasHeight = 0f
         private var canvasWidth = 0f
 
