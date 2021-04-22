@@ -7,7 +7,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.ArrayList
@@ -23,42 +23,31 @@ interface OnDrawListener{
         return this
     }
 }
-class MyHolstForTest(context: Context, attributeSet: AttributeSet): MyHolst(context, attributeSet){
-    private var example:Example? = null
+class MyHolstForTest(context: Context, attributeSet: AttributeSet): MyHolst<Example>(context, attributeSet){
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        example!!.sendTouch(event!!)
+        thing!!.sendTouch(event!!)
         return super.onTouchEvent(event)
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
         super.surfaceCreated(holder)
         setOnClickListener{
-            thread?.send(example!!)
+            GlobalScope.async(Dispatchers.Default) {
+                send(thing!!)
+            }
         }
     }
-    fun send(thing: Example){
-        example = thing
-        super.send(example!!)
-    }
-
-
 }
-class MyHolstForTreeView(context: Context, attributeSet: AttributeSet): MyHolst(context, attributeSet){
-    private var tree = Tree<String>("0")
-    fun send(thing: Tree<String>){
-        tree = thing
-        super.send(thing)
-    }
-}
+open class MyHolst<T:OnDrawListener>(context: Context, attributeSet: AttributeSet): SurfaceView(context, attributeSet), SurfaceHolder.Callback{
 
-open class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(context, attributeSet), SurfaceHolder.Callback{
-    protected var thread:DrawThread? = null
-
+    protected var thing:T? = null
     private val surfaceHolder: SurfaceHolder = holder
+    private val isRunning = AtomicBoolean(false)
     init{
         Log.i("SV", "init")
         this.surfaceHolder.addCallback(this)
         surfaceHolder.setFormat(PixelFormat.TRANSPARENT)
+
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
@@ -66,28 +55,32 @@ open class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(co
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        thread?.setRunning(false)
-        var lock = true
-        while (lock){
-            try{
-                thread?.join()
-                lock = false
-            }catch (e: InterruptedException){
-
+        isRunning.set(false)
+        Log.i("SV", "surfaceDestroyed")
+    }
+    fun set(thing: T){
+        isRunning.set(true)
+        this.thing = thing
+    }
+    protected fun send(thing: T){
+        var canvas:Canvas?=null
+        try{
+            canvas = surfaceHolder.lockCanvas(null)
+        }finally {
+            if(canvas!=null){
+                if(thing!=null){
+                    thing.draw(canvas!!)
+                }
+                surfaceHolder.unlockCanvasAndPost(canvas!!)
             }
         }
-        Log.i("SV", "surfaceDestroyed")
-
-    }
-    fun <T:OnDrawListener>send(thing: T){
-        Log.i("SV", "send")
-        thread = DrawThread(surfaceHolder)
-        thread?.send(thing)
-        thread?.setRunning(true)
-        thread?.start()
     }
     override fun surfaceCreated(holder: SurfaceHolder?) {
         Log.i("SV", "surfaceCreated")
+        GlobalScope.async(Dispatchers.Default) {
+            while(isRunning.get())
+                send(thing!!)
+        }
     }
 
     fun getCanvas():Canvas?{
@@ -100,46 +93,6 @@ open class MyHolst(context: Context, attributeSet: AttributeSet): SurfaceView(co
         surfaceHolder.unlockCanvasAndPost(canvas)
     }
 }
-class DrawThread(private val surfaceHolder: SurfaceHolder):Thread() {
-    private var runFlag:Boolean = false
-    private var beChange = AtomicBoolean(true)
-    private var canvas: Canvas? = null
-    private var onDrawListener:OnDrawListener? = null
-
-    override fun run() {
-        super.run()
-        while (runFlag){
-            if(beChange.get()){
-                canvas = null
-                try{
-                    canvas = surfaceHolder.lockCanvas(null)
-                }finally {
-                    if(canvas!=null){
-                        onDrawListener?.draw(canvas!!)
-                        surfaceHolder.unlockCanvasAndPost(canvas)
-                    }
-                }
-            }
-        }
-    }
-    fun startDraw(){
-        beChange.set(true)
-    }
-    fun stopDraw(){
-        beChange.set(false)
-    }
-    fun isDrawing():Boolean{
-        return beChange.get()
-    }
-    fun setRunning(run: Boolean) {
-        runFlag = run
-    }
-    fun <T : OnDrawListener>send(thing: T){
-        beChange.set(true)
-        onDrawListener = thing.getListener()
-    }
-}
-
 
 fun Canvas.drawKanji(text: String, cx: Float, cy: Float, width: Float, height: Float){
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -170,6 +123,73 @@ class Example:OnDrawListener {
         en.add(Entity("1"))
         en.add(Entity("2"))
         en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+        en.add(Entity("1"))
+        en.add(Entity("2"))
+        en.add(Entity("3"))
+
     }
 
     override fun draw(canvas: Canvas) {
@@ -255,33 +275,35 @@ class Example:OnDrawListener {
             drawMainBitmap(300,300)
         }
         private fun setBorder() {
+            GlobalScope.async(Dispatchers.Default) {
+                pointsAnchor.clear()
+                pointsAnchor.add(position)
+                pointsAnchor.add(PointF(position.x, position.y+mainBitmap.height.toFloat()))
+                pointsAnchor.add(PointF(position.x+mainBitmap.width.toFloat(), position.y+ mainBitmap.height.toFloat()))
+                pointsAnchor.add(PointF(position.x+mainBitmap.width.toFloat(), position.y))
 
-            pointsAnchor.clear()
-            pointsAnchor.add(position)
-            pointsAnchor.add(PointF(position.x, position.y+mainBitmap.height.toFloat()))
-            pointsAnchor.add(PointF(position.x+mainBitmap.width.toFloat(), position.y+ mainBitmap.height.toFloat()))
-            pointsAnchor.add(PointF(position.x+mainBitmap.width.toFloat(), position.y))
+                points.clear()
+                points.add(position.x)
+                points.add(position.y)
+                points.add(position.x)
+                points.add(position.y+mainBitmap.height.toFloat())
 
-            points.clear()
-            points.add(position.x)
-            points.add(position.y)
-            points.add(position.x)
-            points.add(position.y+mainBitmap.height.toFloat())
+                points.add(position.x+mainBitmap.width.toFloat())
+                points.add(position.y+mainBitmap.height.toFloat())
+                points.add(position.x+mainBitmap.width.toFloat())
+                points.add(position.y)
 
-            points.add(position.x+mainBitmap.width.toFloat())
-            points.add(position.y+mainBitmap.height.toFloat())
-            points.add(position.x+mainBitmap.width.toFloat())
-            points.add(position.y)
+                points.add(position.x+mainBitmap.width.toFloat())
+                points.add(position.y)
+                points.add(position.x)
+                points.add(position.y)
 
-            points.add(position.x+mainBitmap.width.toFloat())
-            points.add(position.y)
-            points.add(position.x)
-            points.add(position.y)
+                points.add(position.x)
+                points.add(position.y+mainBitmap.height.toFloat())
+                points.add(position.x+mainBitmap.width.toFloat())
+                points.add(position.y+mainBitmap.height.toFloat())
+            }
 
-            points.add(position.x)
-            points.add(position.y+mainBitmap.height.toFloat())
-            points.add(position.x+mainBitmap.width.toFloat())
-            points.add(position.y+mainBitmap.height.toFloat())
         }
         @Throws(ArrayIndexOutOfBoundsException::class)
         private fun drawAnchorsAndBounds(canvas: Canvas){

@@ -54,9 +54,7 @@ class MainActivity : AppCompatActivity() {
     fun testSurface(fragment: SurfaceFragment){
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-
         fragmentTransaction.replace(R.id.main_container, fragment)
-
         fragmentTransaction.commit()
     }
 }
