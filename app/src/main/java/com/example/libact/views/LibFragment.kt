@@ -28,4 +28,5 @@ class LibFragment():Fragment(R.layout.lib_kanji_fragment) {
         libViewModel.sendDetails(kanji)
     }
 
+
 }

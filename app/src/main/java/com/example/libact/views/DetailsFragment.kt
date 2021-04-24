@@ -5,25 +5,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.SimpleAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.ViewModelStoreOwner
-import com.example.libact.App
-import com.example.libact.Kanji
 import com.example.libact.R
 import com.example.libact.databinding.LibDetailsFragmentBinding
 import com.example.libact.modelsview.LibViewModel
-import com.example.libact.surface.Example
+import com.example.libact.surface.TestCase
 import kotlinx.android.synthetic.main.lib_details_fragment.*
-import java.lang.Exception
 
 class DetailsFragment():Fragment(R.layout.details_item) {
     lateinit var libViewModel:LibViewModel
     private var _binding: LibDetailsFragmentBinding? = null
-    private var example = Example()
+    private var example = TestCase()
     private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater,

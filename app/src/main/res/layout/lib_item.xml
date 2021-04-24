@@ -11,11 +11,8 @@
         android:gravity="center"
         android:translationZ="2dp"
         android:layout_margin="5dp"
-        app:cardCornerRadius="15dp"
+        app:cardCornerRadius="@dimen/cardCornerRadius"
         >
-        <!--
-        Убери два скрытых элемента потом
-        !-->
         <LinearLayout
             android:background="?selectableItemBackground"
             android:layout_width="wrap_content"

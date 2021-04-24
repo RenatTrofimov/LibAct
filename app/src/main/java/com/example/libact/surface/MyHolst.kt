@@ -16,14 +16,10 @@ import kotlin.math.min
 
 
 interface OnDrawListener{
-
     fun draw(canvas: Canvas)
     fun sendTouch(event: MotionEvent)
-    fun getListener():OnDrawListener{
-        return this
-    }
 }
-class MyHolstForTest(context: Context, attributeSet: AttributeSet): MyHolst<Example>(context, attributeSet){
+class MyHolstForTest(context: Context, attributeSet: AttributeSet): MyHolst<TestCase>(context, attributeSet){
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         thing!!.sendTouch(event!!)
         return super.onTouchEvent(event)
@@ -49,7 +45,6 @@ open class MyHolst<T:OnDrawListener>(context: Context, attributeSet: AttributeSe
         surfaceHolder.setFormat(PixelFormat.TRANSPARENT)
 
     }
-
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
         Log.i("SV", "surfaceChanged")
     }
@@ -68,15 +63,12 @@ open class MyHolst<T:OnDrawListener>(context: Context, attributeSet: AttributeSe
             canvas = surfaceHolder.lockCanvas(null)
         }finally {
             if(canvas!=null){
-                if(thing!=null){
-                    thing.draw(canvas!!)
-                }
+                thing.draw(canvas)
                 surfaceHolder.unlockCanvasAndPost(canvas!!)
             }
         }
     }
     override fun surfaceCreated(holder: SurfaceHolder?) {
-        Log.i("SV", "surfaceCreated")
         GlobalScope.async(Dispatchers.Default) {
             while(isRunning.get())
                 send(thing!!)
@@ -84,12 +76,10 @@ open class MyHolst<T:OnDrawListener>(context: Context, attributeSet: AttributeSe
     }
 
     fun getCanvas():Canvas?{
-        Log.i("SV", "getCanvas")
         return surfaceHolder.lockCanvas(null)
 
     }
     fun setCanvas(canvas: Canvas){
-        Log.i("SV", "getCanvas")
         surfaceHolder.unlockCanvasAndPost(canvas)
     }
 }
@@ -116,94 +106,48 @@ fun Canvas.drawKanji(text: String, cx: Float, cy: Float, width: Float, height: F
     TreeMap<Int, Int>()
 }
 
-class Example:OnDrawListener {
+class TestCase:OnDrawListener {
     private val en = ArrayList<Entity>()
-    private val resizeLatch = false
-    init {
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
-        en.add(Entity("1"))
-        en.add(Entity("2"))
-        en.add(Entity("3"))
+    private var result:Bitmap? = null
+    init{
 
     }
-
-    override fun draw(canvas: Canvas) {
-        canvas.drawColor(Color.WHITE)
-        for(en in en.iterator()){
-            en.drawEntity(canvas)
+    fun add(str:String){
+        en.add(Entity(str))
+    }
+    fun check(){
+        var trueResult = Bitmap.createBitmap(result!!)
+        val c = Canvas(trueResult)
+        c.drawColor(Color.WHITE)
+        c.drawBitmap(drawTextBitmap("紙", result!!.width,result!!.height), 0f,0f, Paint())
+        trueResult = crop(Bitmap.createScaledBitmap(trueResult, 128,128, true))
+        var varTempResult = crop(Bitmap.createScaledBitmap(result!!, 128,128, true))
+        varTempResult = Bitmap.createScaledBitmap(varTempResult, trueResult.width, trueResult.height, true)
+        var count = 0
+        for(x in 0 until trueResult.width){
+            for(y in 0 until trueResult.height){
+                if(varTempResult.getPixel(x, y) == trueResult.getPixel(x, y)){
+                    count++
+                }
+            }
         }
-        //canvas.drawBitmap(en.bitmap, null, Rect(0,0,canvas.width, canvas.height), Paint())
+        Log.i("result", "${
+            count*100/(trueResult.width*trueResult.height)
+        }")
+    }
+    override fun draw(canvas: Canvas) {
+        if(result == null)
+            result = Bitmap.createBitmap(canvas.width, canvas.height, Bitmap.Config.ARGB_8888)
+        val tempCanvas = Canvas(result!!)
+        tempCanvas.drawColor(Color.WHITE)
+        for(en in en.iterator()){
+            en.drawEntity(tempCanvas)
+        }
+        canvas.drawBitmap(result!!, 0f,0f, Paint())
     }
 
     override fun sendTouch(event: MotionEvent) {
         val point = PointF(event.x,event.y)
-        val pointerIndex= event.actionIndex
-        val pointerId = event.getPointerId(pointerIndex);
         when(event.action){
             MotionEvent.ACTION_DOWN -> {
                 Log.i("SV", "down")
@@ -214,13 +158,11 @@ class Example:OnDrawListener {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
-//                Log.i("i", "first ${event.x} and ${event.y}")
                 for(en in en.iterator()){
                     if(en.isSelected) {
                         if (event.pointerCount > 1) {
                             val secondTouch = MotionEvent.PointerCoords()
                             event.getPointerCoords(1, secondTouch)
-//                            Log.i("i", "second ${secondTouch.x} and ${secondTouch.y}")
                             en.reSize(
                                 point,
                                 PointF(
@@ -248,21 +190,16 @@ class Example:OnDrawListener {
                 Log.i("SV", "PU")
             }
             else -> {
-//                Log.i("SV", "${}")
             }
         }
-
-
     }
 
 
-    class Entity(str:String){
+    class Entity(private val str: String){
         var isSelected:Boolean = false
         private val pointsAnchor = ArrayList<PointF>()
         private val points = ArrayList<Float>()
-        private val str:String = str
-        private var mainBitmap:Bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888)
-        private var border:Bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888)
+        private var mainBitmap:Bitmap
 
         private var position = PointF(0f, 0f)
         private var anchorRadius = 20f
@@ -272,7 +209,7 @@ class Example:OnDrawListener {
 
         init{
             setBorder()
-            drawMainBitmap(300,300)
+            mainBitmap = crop(drawTextBitmap(str,300,300))
         }
         private fun setBorder() {
             GlobalScope.async(Dispatchers.Default) {
@@ -324,24 +261,22 @@ class Example:OnDrawListener {
             }catch (e:ConcurrentModificationException ){
                 Log.i("Ex", "ConcurrentModificationException")
             }
-
         }
         fun reSize(point1: PointF, point2: PointF){
-            if(abs(point1.x - point2.x) in 1f..canvasWidth && abs(point1.y - point2.y) in 1f..canvasHeight)
-                drawMainBitmap( abs((point1.x - point2.x).toInt()),
-                                abs((point1.y - point2.y).toInt()))
-
+            val newWidth = abs(point1.x - point2.x).toInt()
+            val newHeight = abs(point1.y - point2.y).toInt()
+            if( newWidth in 1..canvasWidth.toInt()
+                &&
+                newHeight in 1..canvasHeight.toInt())
+                mainBitmap = Bitmap.createScaledBitmap(
+                    crop(drawTextBitmap( str,
+                        min(newWidth, newHeight)/2,
+                        min(newWidth, newHeight)/2)),
+                    newWidth,
+                    newHeight,
+                    true)
             this.position = PointF(min(point1.x, point2.x), min(point1.y, point2.y))
             setBorder()
-        }
-        private fun drawMainBitmap(width: Int, height: Int){
-            val tempBitmap = Bitmap.createBitmap(width, height,Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(tempBitmap)
-            val paint = Paint()
-            paint.color = Color.BLACK
-            paint.textSize = tempBitmap.height.toFloat()
-            canvas.drawText(str, 0f, tempBitmap.height*0.9f, paint)
-            mainBitmap = tempBitmap
         }
         fun setPosition(position:PointF){
             position.x = if(position.x - mainBitmap.width/2 < 0f){
@@ -377,6 +312,37 @@ class Example:OnDrawListener {
 
     }
 }
+fun crop(origin:Bitmap) :Bitmap{
+    val BLACK = -16777216
+    var minH = origin.height
+    var maxH = 0
+    var maxW = 0
+    var minW = origin.width
+    for(x in 0 until origin.width){
+        for(y in 0 until origin.height){
+            if(origin.getPixel(x, y) == BLACK){
+                if(y < minH)
+                    minH = y
+                if(y > maxH)
+                    maxH = y
+                if(x < minW)
+                    minW = x
+                if(x > maxW)
+                    maxW = x
+            }
+        }
+    }
+    return Bitmap.createBitmap(origin, minW, minH, maxW - minW, maxH - minH)
+}
+fun drawTextBitmap(str: String, width: Int, height: Int):Bitmap{
+    val tempBitmap = Bitmap.createBitmap(width, height,Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(tempBitmap)
+    val paint = Paint()
+    paint.color = Color.BLACK
+    paint.textSize = min(tempBitmap.height,tempBitmap.width).toFloat()
+    canvas.drawText(str, 0f, paint.textSize*0.9f, paint)
+    return tempBitmap
+}
 ///Мои пытки в деревья, на будущее
 
 
@@ -387,8 +353,8 @@ class Tree<T>(rootData: T):OnDrawListener{
     private val points:ArrayList<PointF>
     init{
         root.data = rootData
-        root.children = ArrayList<Node<T>>()
-        points = ArrayList<PointF>()
+        root.children = ArrayList()
+        points = ArrayList()
     }
     private fun getChildNum():Int{
         return root.children!!.size
