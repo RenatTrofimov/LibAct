@@ -107,6 +107,7 @@ fun Canvas.drawKanji(text: String, cx: Float, cy: Float, width: Float, height: F
 }
 
 class TestCase:OnDrawListener {
+    private var draw = true
     private val en = ArrayList<Entity>()
     private var result:Bitmap? = null
     init{
@@ -136,6 +137,8 @@ class TestCase:OnDrawListener {
         }")
     }
     override fun draw(canvas: Canvas) {
+        if(!draw)
+            return
         if(result == null)
             result = Bitmap.createBitmap(canvas.width, canvas.height, Bitmap.Config.ARGB_8888)
         val tempCanvas = Canvas(result!!)
@@ -188,10 +191,19 @@ class TestCase:OnDrawListener {
             }
             MotionEvent.ACTION_POINTER_UP ->{
                 Log.i("SV", "PU")
+//                for(en in en.iterator()){
+//                    if(en.isSelected)
+//                        en.setBitmap(crop(en.getBitmap()))
+//                }
             }
             else -> {
+
             }
         }
+    }
+
+    fun clean() {
+        en.clear()
     }
 
 
@@ -261,6 +273,12 @@ class TestCase:OnDrawListener {
             }catch (e:ConcurrentModificationException ){
                 Log.i("Ex", "ConcurrentModificationException")
             }
+        }
+        fun getBitmap():Bitmap{
+            return mainBitmap
+        }
+        fun setBitmap(b:Bitmap){
+            mainBitmap = b
         }
         fun reSize(point1: PointF, point2: PointF){
             val newWidth = abs(point1.x - point2.x).toInt()

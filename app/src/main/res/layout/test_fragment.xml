@@ -57,10 +57,9 @@
         android:layout_margin="5dp"
         app:cardCornerRadius="@dimen/cardCornerRadius"
         android:textSize="@dimen/textSize"
-        android:text="done"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/clear_btn"
         app:layout_constraintTop_toBottomOf="@+id/rv_test_fragment">
         <TextView
             android:background="?selectableItemBackground"
@@ -69,5 +68,26 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/textSize"
             android:text="done"/>
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/clear_btn"
+        android:gravity="center"
+        android:translationZ="2dp"
+        android:layout_margin="5dp"
+        app:cardCornerRadius="@dimen/cardCornerRadius"
+        android:textSize="@dimen/textSize"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/done_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rv_test_fragment">
+        <TextView
+            android:background="?selectableItemBackground"
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/textSize"
+            android:text="clear"/>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

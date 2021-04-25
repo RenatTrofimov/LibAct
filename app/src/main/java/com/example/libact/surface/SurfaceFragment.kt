@@ -32,6 +32,10 @@ class SurfaceFragment: Fragment(R.layout.test_fragment) {
         done_btn.setOnClickListener {
             viewModel.example.check()
         }
+
+        clear_btn.setOnClickListener {
+            viewModel.example.clean()
+        }
     }
     override fun onResume() {
         super.onResume()

@@ -33,7 +33,8 @@ interface KanjiDao {
 
     @Insert
     fun insertAll(vararg users: KanjiTable)
-
+    @Insert
+    fun insertItem(user: KanjiTable)
     @Delete
     fun delete(user: KanjiTable)
 }
