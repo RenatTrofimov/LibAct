@@ -16,12 +16,21 @@
             android:orientation="vertical"
             android:gravity="center"
             android:scrollbars="vertical">
+            <TextView
+                android:layout_marginBottom="5dp"
+                android:id="@+id/id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="50"
+                android:text="@{LibViewModel.selectedKanji.id}"
+                android:textSize="@dimen/textSize"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="5dp"
                 >
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView"
                 android:layout_width="wrap_content"
@@ -47,28 +56,17 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.cardview.widget.CardView>
-                <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:gravity="center"
-                    android:translationZ="5dp"
-                    app:cardCornerRadius="15dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.06"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.024">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:padding="5dp"
                         >
+
                         <TextView
                             android:layout_marginBottom="5dp"
-                            android:id="@+id/title_on_reading_tv"
+                            android:id="@+id/on_reading_tv"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="50"
@@ -76,14 +74,13 @@
                             android:textSize="@dimen/textSize"/>
 
                         <TextView
-                            android:id="@+id/title_kun_reading_tv"
+                            android:id="@+id/kun_reading_tv"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="50"
                             android:text="@{LibViewModel.selectedKanji.kun}"
                             android:textSize="@dimen/textSize" />
                     </LinearLayout>
-                    </androidx.cardview.widget.CardView>
                 </LinearLayout>
                 <TextView
                     android:layout_marginBottom="5dp"
@@ -93,7 +90,20 @@
                     android:layout_height="wrap_content"
                     android:text="@string/translate_title"
                     android:textSize="@dimen/textSize"/>
-                <TextView
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:translationZ="5dp"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.06"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.024"
+                >
+            <TextView
                     android:layout_marginBottom="5dp"
                     android:id="@+id/translate_tv"
                     android:layout_width="match_parent"
@@ -101,11 +111,35 @@
                     android:layout_height="wrap_content"
                     android:text="@{LibViewModel.selectedKanji.translation}"
                     android:textSize="@dimen/textSize"/>
-                <com.example.libact.surface.MyHolstForTest
+            </androidx.cardview.widget.CardView>
+            <TextView
+                android:layout_marginBottom="5dp"
+                android:id="@+id/title_tree_tv"
+                android:layout_width="wrap_content"
+                android:padding="5dp"
+                android:layout_height="wrap_content"
+                android:text="Дерево"
+                android:textSize="@dimen/textSize"/>
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:translationZ="5dp"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.06"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.024"
+                >
+                <SurfaceView
                     android:id="@+id/MyHolstForTest"
                     android:layout_width="wrap_content"
                     android:layout_height="200dp"
                     android:layout_marginBottom="50dp"/>
+            </androidx.cardview.widget.CardView>
             </LinearLayout>
         </ScrollView>
 </layout>

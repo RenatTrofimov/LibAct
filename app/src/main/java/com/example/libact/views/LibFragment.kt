@@ -3,11 +3,8 @@ package com.example.libact.views
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.GridLayoutManager
-import com.example.libact.App
 import com.example.libact.Kanji
 import com.example.libact.R
 import com.example.libact.lib_recycler_view.LibAdapter

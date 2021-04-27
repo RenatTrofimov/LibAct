@@ -3,7 +3,7 @@
     package="com.example.libact">
 
     <application
-        android:name=".App"
+        android:name="com.example.libact.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -12,10 +12,9 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:hardwareAccelerated="true">
 
-        <activity android:name=".views.MainActivity">
+        <activity android:name="com.example.libact.views.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

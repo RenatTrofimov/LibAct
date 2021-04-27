@@ -3,9 +3,7 @@ package com.example.libact.views
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
-import android.view.SurfaceView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.example.libact.R
 import com.example.libact.modelsview.LibViewModel
@@ -15,8 +13,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        testSurface(SurfaceFragment())
-        //landInit()
+        //testSurface(SurfaceFragment())
+
+        landInit()
     }
     private fun landInit(){
         val libFragment = LibFragment()

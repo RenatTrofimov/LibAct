@@ -184,8 +184,9 @@ class TestCase:OnDrawListener {
                 for(en in en.iterator()){
                     if(en.isSelected)
                         en.isSelected=false
+
                 }
-            }
+            }   
             MotionEvent.ACTION_POINTER_DOWN ->{
                 Log.i("SV", "PD")
             }
