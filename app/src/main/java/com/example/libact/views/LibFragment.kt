@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.lib_kanji_fragment.*
 
 class LibFragment():Fragment(R.layout.lib_kanji_fragment) {
     lateinit var libViewModel:LibViewModel
-    private lateinit var adapter:LibAdapter
+    private lateinit var adapter:LibAdapter<Kanji>
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.i("LibViewModel", "Called ViewModelProvider.get")

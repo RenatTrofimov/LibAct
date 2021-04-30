@@ -10,9 +10,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.libact.R
 import com.example.libact.databinding.LibDetailsFragmentBinding
 import com.example.libact.modelsview.LibViewModel
+import com.example.libact.surface.Tree
 import kotlinx.android.synthetic.main.lib_details_fragment.*
 
 class DetailsFragment():Fragment(R.layout.details_item) {
+
     lateinit var libViewModel:LibViewModel
     private var _binding: LibDetailsFragmentBinding? = null
     private val binding get() = _binding!!
@@ -29,16 +31,15 @@ class DetailsFragment():Fragment(R.layout.details_item) {
     }
     override fun onDestroyView() {
         super.onDestroyView()
-
         _binding = null
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //MyHolstForTest.set(example)
+        bind()
     }
-
     fun bind(){
         binding.libViewModel = libViewModel
+        MyHolstForTest.set(libViewModel.tree)
         binding.invalidateAll()
     }
 }

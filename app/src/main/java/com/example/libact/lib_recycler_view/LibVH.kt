@@ -5,10 +5,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.libact.Kanji
 import com.example.libact.R
 
-class LibVH(itemView: View, val onClick: (Kanji) -> Unit) : RecyclerView.ViewHolder(itemView) {
+class LibVH<T>(itemView: View, val onClick: (T) -> Unit) : RecyclerView.ViewHolder(itemView) {
     private var kanjiField: TextView = itemView.findViewById(R.id.lib_item_hieroglyph_TV)
-    fun bind(kanji: Kanji) {
-        kanjiField.text = kanji.hieroglyph
+    fun bind(kanji: T) {
+        kanjiField.text = kanji.toString()
         itemView.setOnClickListener {
             onClick(kanji)
         }

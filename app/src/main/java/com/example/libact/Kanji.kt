@@ -10,6 +10,9 @@ data class Kanji (
     @ColumnInfo(name = "translation") val translation: String
 ){
     @PrimaryKey(autoGenerate = true) var id: Int = 0
+    override fun toString(): String {
+        return hieroglyph
+    }
 }
 interface BaseDao<T> {
     @Insert

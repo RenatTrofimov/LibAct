@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.View
 import kotlinx.coroutines.*
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
@@ -24,7 +25,6 @@ class MyHolstForTest(context: Context, attributeSet: AttributeSet): MyHolst<Test
         thing!!.sendTouch(event!!)
         return super.onTouchEvent(event)
     }
-
     override fun surfaceCreated(holder: SurfaceHolder?) {
         super.surfaceCreated(holder)
         setOnClickListener{
@@ -33,6 +33,20 @@ class MyHolstForTest(context: Context, attributeSet: AttributeSet): MyHolst<Test
             }
         }
     }
+}
+class MyHolstForTree(context: Context, attributeSet: AttributeSet): MyHolst<Tree<String>>(context, attributeSet){
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        return super.onTouchEvent(event)
+    }
+    override fun surfaceCreated(holder: SurfaceHolder?) {
+        render()
+    }
+    private fun render(){
+        GlobalScope.launch {
+            send(thing!!)
+        }
+    }
+
 }
 open class MyHolst<T:OnDrawListener>(context: Context, attributeSet: AttributeSet): SurfaceView(context, attributeSet), SurfaceHolder.Callback{
 
@@ -56,8 +70,11 @@ open class MyHolst<T:OnDrawListener>(context: Context, attributeSet: AttributeSe
     fun set(thing: T){
         isRunning.set(true)
         this.thing = thing
+        GlobalScope.launch {
+            send(thing)
+        }
     }
-    protected fun send(thing: T){
+    protected suspend fun send(thing: T){
         var canvas:Canvas?=null
         try{
             canvas = surfaceHolder.lockCanvas(null)
@@ -68,6 +85,7 @@ open class MyHolst<T:OnDrawListener>(context: Context, attributeSet: AttributeSe
             }
         }
     }
+
     override fun surfaceCreated(holder: SurfaceHolder?) {
         GlobalScope.async(Dispatchers.Default) {
             while(isRunning.get())
@@ -110,31 +128,40 @@ class TestCase:OnDrawListener {
     private var draw = true
     private val en = ArrayList<Entity>()
     private var result:Bitmap? = null
-    init{
+    var kanji = ""
 
-    }
     fun add(str:String){
         en.add(Entity(str))
     }
     fun check(){
+
         var trueResult = Bitmap.createBitmap(result!!)
         val c = Canvas(trueResult)
         c.drawColor(Color.WHITE)
-        c.drawBitmap(drawTextBitmap("紙", result!!.width,result!!.height), 0f,0f, Paint())
+        c.drawBitmap(drawTextBitmap(kanji, result!!.width,result!!.height), 0f,0f, Paint())
         trueResult = crop(Bitmap.createScaledBitmap(trueResult, 128,128, true))
         var varTempResult = crop(Bitmap.createScaledBitmap(result!!, 128,128, true))
         varTempResult = Bitmap.createScaledBitmap(varTempResult, trueResult.width, trueResult.height, true)
         var count = 0
+        var first = 0
+        var second = 0
         for(x in 0 until trueResult.width){
             for(y in 0 until trueResult.height){
+                first+=abs(varTempResult.getPixel(x, y))/100
+                second+=abs(trueResult.getPixel(x, y))/100
                 if(varTempResult.getPixel(x, y) == trueResult.getPixel(x, y)){
                     count++
                 }
+
             }
         }
         Log.i("result", "${
             count*100/(trueResult.width*trueResult.height)
-        }")
+        } \n ${
+                first / (trueResult.width * trueResult.height)
+            } \n ${
+                second / (trueResult.width * trueResult.height)
+            } \n")
     }
     override fun draw(canvas: Canvas) {
         if(!draw)
