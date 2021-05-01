@@ -21,13 +21,15 @@ interface DaoBase<T>{
 @Entity(tableName = "manyTestManyQuestion", primaryKeys = ["test_id", "kanji_id"])
 data class ManyTestManyQuestion(val test_id: Int,
                                 val kanji_id: Int,
-                                @ColumnInfo(name = "kun") val kunCheck: Int,
-                                @ColumnInfo(name = "on") val onCheck: Int,
-                                @ColumnInfo(name = "trans") val transCheck: Int)
+                                @ColumnInfo(name = "kun") var kunCheck: Int,
+                                @ColumnInfo(name = "on") var onCheck: Int,
+                                @ColumnInfo(name = "trans") var transCheck: Int)
 @Dao
 interface ManyTestManyQuestionDao:DaoBase<ManyTestManyQuestion>{
     @Query("SELECT * FROM manyTestManyQuestion WHERE test_id = (:id)")
     fun getKeysById(id: Int): List<ManyTestManyQuestion>
+    @Query("SELECT * FROM manyTestManyQuestion WHERE test_id = (:id) AND `kun` + `on` + `trans` < 3 LIMIT (:limit)")
+    fun getKeysByIdLimitedBy(id: Int, limit:Int): List<ManyTestManyQuestion>
 
 }
 @Entity(tableName = "key_id", primaryKeys = ["id", "key"])
@@ -37,8 +39,9 @@ data class KeyId(
 )
 @Dao
 interface KeyIdDao:DaoBase<KeyId>{
-    @Query("SELECT `key` FROM key_id WHERE id = (:id)")
+    @Query("SELECT `key` FROM key_id WHERE id = (:id) ")
     fun getKeysById(id: Int): List<Int>
+
 }
 
 

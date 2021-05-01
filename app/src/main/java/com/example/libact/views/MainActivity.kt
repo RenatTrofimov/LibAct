@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         testSurface(SurfaceFragment())
         //landInit()
+
     }
     private fun landInit(){
         val libFragment = LibFragment()

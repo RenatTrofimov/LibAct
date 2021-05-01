@@ -15,25 +15,28 @@ import kotlinx.android.synthetic.main.test_fragment.*
 class SurfaceFragment: Fragment(R.layout.test_fragment) {
     private var adapter:LibAdapter<KanjiKey>? = null
     private lateinit var viewModel:TestViewModel
-
+    private val title = question_tv
     private fun adapterOnClick(kanji: KanjiKey) {
-        viewModel.example.add(kanji.hieroglyph)
+        viewModel.example.add(kanji)
     }
-
+    fun setQuestion(title:String){
+        adapter = LibAdapter<KanjiKey>(viewModel.returnList()){KanjiKey -> adapterOnClick(KanjiKey)}
+        rv_test_fragment.adapter = adapter
+        this.title.text = title
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i("F", "onViewCreated")
         viewModel = ViewModelProvider(requireActivity()).get(TestViewModel::class.java)
-        viewModel.setTestList(1)
-        viewModel.setQuestion()
-        adapter = LibAdapter<KanjiKey>(viewModel.returnList()){KanjiKey -> adapterOnClick(KanjiKey)}
+        viewModel.setTestList(1, 10)
+        viewModel.fragment = this
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.i("F", "onViewCreated")
-        rv_test_fragment.adapter = adapter
+        viewModel.setQuestion()
         done_btn.setOnClickListener {
-            viewModel.example.check()
+            viewModel.check()
         }
 
         clear_btn.setOnClickListener {

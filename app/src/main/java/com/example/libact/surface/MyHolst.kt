@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
+import com.example.libact.KanjiKey
 import kotlinx.coroutines.*
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
@@ -78,7 +79,10 @@ open class MyHolst<T:OnDrawListener>(context: Context, attributeSet: AttributeSe
         var canvas:Canvas?=null
         try{
             canvas = surfaceHolder.lockCanvas(null)
-        }finally {
+        }
+        catch(e:IllegalArgumentException) {
+        }
+        finally {
             if(canvas!=null){
                 thing.draw(canvas)
                 surfaceHolder.unlockCanvasAndPost(canvas!!)
@@ -129,39 +133,37 @@ class TestCase:OnDrawListener {
     private val en = ArrayList<Entity>()
     private var result:Bitmap? = null
     var kanji = ""
-
-    fun add(str:String){
-        en.add(Entity(str))
+    fun getIdList():List<Int>{
+        return en.map { it.getID() }
     }
-    fun check(){
+    fun add(kanji :KanjiKey){
+        en.add(Entity(kanji))
+    }
+    fun check():Boolean{
 
         var trueResult = Bitmap.createBitmap(result!!)
         val c = Canvas(trueResult)
         c.drawColor(Color.WHITE)
         c.drawBitmap(drawTextBitmap(kanji, result!!.width,result!!.height), 0f,0f, Paint())
-        trueResult = crop(Bitmap.createScaledBitmap(trueResult, 128,128, true))
-        var varTempResult = crop(Bitmap.createScaledBitmap(result!!, 128,128, true))
-        varTempResult = Bitmap.createScaledBitmap(varTempResult, trueResult.width, trueResult.height, true)
+        trueResult = crop(Bitmap.createScaledBitmap(trueResult, 128,128, false))
+        var varTempResult = crop(Bitmap.createScaledBitmap(result!!, 128,128, false))
+        varTempResult = Bitmap.createScaledBitmap(varTempResult, trueResult.width, trueResult.height, false)
         var count = 0
         var first = 0
         var second = 0
         for(x in 0 until trueResult.width){
             for(y in 0 until trueResult.height){
-                first+=abs(varTempResult.getPixel(x, y))/100
-                second+=abs(trueResult.getPixel(x, y))/100
+                first+=abs(varTempResult.getPixel(x, y))/1000
+                second+=abs(trueResult.getPixel(x, y))/1000
                 if(varTempResult.getPixel(x, y) == trueResult.getPixel(x, y)){
                     count++
                 }
-
             }
         }
         Log.i("result", "${
             count*100/(trueResult.width*trueResult.height)
-        } \n ${
-                first / (trueResult.width * trueResult.height)
-            } \n ${
-                second / (trueResult.width * trueResult.height)
-            } \n")
+        }")
+        return count*100/(trueResult.width*trueResult.height) > 65
     }
     override fun draw(canvas: Canvas) {
         if(!draw)
@@ -235,7 +237,7 @@ class TestCase:OnDrawListener {
     }
 
 
-    class Entity(private val str: String){
+    class Entity(private val kanji: KanjiKey){
         var isSelected:Boolean = false
         private val pointsAnchor = ArrayList<PointF>()
         private val points = ArrayList<Float>()
@@ -249,7 +251,7 @@ class TestCase:OnDrawListener {
 
         init{
             setBorder()
-            mainBitmap = crop(drawTextBitmap(str,300,300))
+            mainBitmap = crop(drawTextBitmap(kanji.hieroglyph,300,300))
         }
         private fun setBorder() {
             GlobalScope.async(Dispatchers.Default) {
@@ -282,6 +284,7 @@ class TestCase:OnDrawListener {
             }
 
         }
+        fun getID() = kanji.id
         @Throws(ArrayIndexOutOfBoundsException::class)
         private fun drawAnchorsAndBounds(canvas: Canvas){
 
@@ -315,7 +318,7 @@ class TestCase:OnDrawListener {
                 &&
                 newHeight in 1..canvasHeight.toInt())
                 mainBitmap = Bitmap.createScaledBitmap(
-                    crop(drawTextBitmap( str,
+                    crop(drawTextBitmap( kanji.hieroglyph,
                         min(newWidth, newHeight)/2,
                         min(newWidth, newHeight)/2)),
                     newWidth,

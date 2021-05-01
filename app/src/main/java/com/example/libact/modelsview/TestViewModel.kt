@@ -18,16 +18,23 @@ class TestViewModel(): ViewModel() {
     lateinit var fragment:SurfaceFragment
     private lateinit var question:Question
     private val variantsOfAnswer = ArrayList<KanjiKey>()
-    private var currentPosition = 0
+    var currentPosition = 0
     val example = TestCase()
+    private val repeats = 1
 
-    lateinit var testList:List<ManyTestManyQuestion>
-    init{
-
+    private fun ManyTestManyQuestion.sum():Int{
+        return kunCheck + onCheck + transCheck
     }
+    private lateinit var testList:List<ManyTestManyQuestion>
+
     fun setQuestion(){
-        var anotherAnswer = mutableListOf<Int>()
-        val trueAnswer = App.getDB().keyIdDao().getKeysById(testList[currentPosition].kanji_id)
+        val anotherAnswer = mutableListOf<Int>()
+        do{
+            currentPosition = Random.nextInt(0, testList.size)
+        }while(testList[currentPosition].sum() >= repeats*3)
+        val testCase = testList[currentPosition]
+
+        val trueAnswer = App.getDB().keyIdDao().getKeysById(testCase.kanji_id)
 
         for(e in 0 until (6 - trueAnswer.size)){
             var temp = 0
@@ -40,47 +47,82 @@ class TestViewModel(): ViewModel() {
         }
         val variantsOfAnswer = listOf(anotherAnswer, trueAnswer).flatten()
         this.variantsOfAnswer.clear()
+
         for(item in variantsOfAnswer){
             this.variantsOfAnswer.add(App.getDB().kanjiKeyDao().findById(item))
         }
-        val type = Random.nextInt(0, 3)
         val tempKanji = App.getDB().kanjiDao().findById(testList[currentPosition].kanji_id)
         example.kanji = tempKanji.hieroglyph
-        question = when(type){
-            0 ->{
-                Question(tempKanji.kun, trueAnswer)
-            }
-            1 ->{
-                Question(tempKanji.on, trueAnswer)
-            }
-            2 ->{
-                Question(tempKanji.translation, trueAnswer)
-            }
-            else -> {
-                Question("", trueAnswer)
-            }
-        }
+        do{
+            val type = Random.nextInt(0, 3)
 
-    }
-    fun setTestList(test_id:Int){
-        testList = App.getDB().manyTestManyQuestionDao().getKeysById(test_id)
-        for(item in testList){
-            if(item.kunCheck + item.onCheck + item.transCheck <3){
-                break
+            val title = when(type){
+                0 ->{
+                    tempKanji.kun
+                }
+                1 ->{
+                    tempKanji.on
+                }
+                2 ->{
+                    tempKanji.translation
+                }
+                else -> {
+                    ""
+                }
             }
-            currentPosition++
-        }
+            question = Question(title, trueAnswer, type)
+
+        }while(when(type){
+                0 ->{
+                    testCase.kunCheck
+                }
+                1 ->{
+                    testCase.onCheck
+                }
+                2 ->{
+                    testCase.transCheck
+                }
+                else -> {
+                    repeats
+                }} >=  repeats)
+                fragment.setQuestion(question.title)
+    }
+
+    fun check(){
+       if( question.checkRightAnswer(example.getIdList())
+           &&
+           example.check()){
+               val testCase =  testList[currentPosition]
+               when(question.typeQuestion){
+                   0 ->{
+                       testCase.kunCheck++
+                   }
+                   1 ->{
+                       testCase.onCheck++
+                   }
+                   2 ->{
+                       testCase.transCheck++
+                   }
+               }
+           App.getDB().manyTestManyQuestionDao().update(testCase)
+       }
+
+        setQuestion()
+    }
+
+    fun setTestList(test_id:Int, window:Int){
+        testList = App.getDB().manyTestManyQuestionDao().getKeysByIdLimitedBy(test_id, window)
     }
     fun returnList():ArrayList<KanjiKey>{
         return variantsOfAnswer
     }
     class Question(
-        private val title: String,
-        private val rightAnswer: List<Int>
+       val title: String,
+         val rightAnswer: List<Int>,
+        val typeQuestion: Int
     ){
         fun checkRightAnswer(answer:List<Int>):Boolean{
-            return (answer.containsAll(rightAnswer) && rightAnswer.containsAll(answer))
+            return (answer.containsAll(rightAnswer))
         }
-        fun get() = title
     }
 }
