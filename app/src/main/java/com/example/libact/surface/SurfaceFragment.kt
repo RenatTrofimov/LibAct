@@ -15,14 +15,14 @@ import kotlinx.android.synthetic.main.test_fragment.*
 class SurfaceFragment: Fragment(R.layout.test_fragment) {
     private var adapter:LibAdapter<KanjiKey>? = null
     private lateinit var viewModel:TestViewModel
-    private val title = question_tv
+
     private fun adapterOnClick(kanji: KanjiKey) {
         viewModel.example.add(kanji)
     }
     fun setQuestion(title:String){
         adapter = LibAdapter<KanjiKey>(viewModel.returnList()){KanjiKey -> adapterOnClick(KanjiKey)}
         rv_test_fragment.adapter = adapter
-        this.title.text = title
+        question_tv.text = title
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

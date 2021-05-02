@@ -7,6 +7,7 @@ import com.example.libact.Kanji
 import com.example.libact.surface.Tree
 import com.example.libact.views.DetailsFragment
 import com.example.libact.views.LibFragment
+import com.example.libact.views.LibraryFragment
 import com.example.libact.views.MainActivity
 
 
@@ -14,7 +15,8 @@ class LibViewModel: ViewModel() {
     //Views
     private lateinit var libView: LibFragment
     private lateinit var detailsView: DetailsFragment
-    private lateinit var activity: MainActivity
+    private lateinit var libraryFragment: LibraryFragment
+    var isLand = false
     //???
     var tree = Tree<String>("")
     var kanjiList = ArrayList<Kanji>()
@@ -27,16 +29,15 @@ class LibViewModel: ViewModel() {
     fun sendDetails(kanji:Kanji){
         selectedKanji = kanji
         setTree()
-        if(activity.isLandOrientation()){
+        if(isLand){
             detailsView.bind()
         }else{
-            activity.openDetailsFragment(detailsView)
+            libraryFragment.openDetailsFragment(detailsView)
         }
     }
-    fun setViews(activity: MainActivity, detailsFragment: DetailsFragment, libFragment: LibFragment){
+    fun setViews(lib: LibraryFragment, detailsFragment: DetailsFragment, libFragment: LibFragment){
         libView = libFragment;
         detailsView = detailsFragment
-        this.activity = activity
     }
     private fun getList():ArrayList<Kanji>{
         return ArrayList(App.getDB().kanjiDao().getAll())

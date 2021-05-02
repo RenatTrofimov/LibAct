@@ -4,18 +4,26 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.example.libact.R
 import com.example.libact.modelsview.LibViewModel
 import com.example.libact.surface.SurfaceFragment
 
 class MainActivity : AppCompatActivity() {
+    var tabSelected = 0
+    val tabSelectedStr = "tabSelectedStr"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        testSurface(SurfaceFragment())
-        //landInit()
+        when(tabSelected){
+            0 -> {
 
+            }
+            1 ->{
+
+            }
+        }
     }
     private fun landInit(){
         val libFragment = LibFragment()
@@ -25,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         val libModel = ViewModelProviders.of(this).get(LibViewModel::class.java)
 
-        libModel.setViews(this, detailsFragment, libFragment)
+        libModel.setViews( detailsFragment, libFragment)
 
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
@@ -33,10 +41,8 @@ class MainActivity : AppCompatActivity() {
         if (!isLandOrientation()){
             fragmentTransaction.replace(R.id.main_container, libFragment)
         }else{
-            fragmentTransaction.replace(R.id.lnd_lib_fragment, libFragment)
-            fragmentTransaction.replace(R.id.lnd_details_fragment, detailsFragment)
-        }
 
+        }
         fragmentTransaction.commit()
     }
     fun openDetailsFragment(fragment:  DetailsFragment){
@@ -48,10 +54,21 @@ class MainActivity : AppCompatActivity() {
     fun isLandOrientation():Boolean{
         return resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     }
+
     fun testSurface(fragment: SurfaceFragment){
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.main_container, fragment)
         fragmentTransaction.commit()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(tabSelectedStr, tabSelected)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        tabSelected = savedInstanceState.getInt(tabSelectedStr)
     }
 }

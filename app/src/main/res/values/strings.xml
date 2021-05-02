@@ -6,7 +6,9 @@
     <string name="translate_title">Перевод</string>
     <string name="translate_item_details_sample">00) details sample</string>
 
-
     <string name="textSize">20sp</string>
+    <string name="done">done</string>
+    <string name="clear">clear</string>
+    <string name="show">show</string>
 
 </resources>

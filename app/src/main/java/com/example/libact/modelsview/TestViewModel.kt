@@ -20,7 +20,8 @@ class TestViewModel(): ViewModel() {
     private val variantsOfAnswer = ArrayList<KanjiKey>()
     var currentPosition = 0
     val example = TestCase()
-    private val repeats = 1
+    private var repeats = 1
+    private var testListId = 1
 
     private fun ManyTestManyQuestion.sum():Int{
         return kunCheck + onCheck + transCheck
@@ -28,9 +29,12 @@ class TestViewModel(): ViewModel() {
     private lateinit var testList:List<ManyTestManyQuestion>
 
     fun setQuestion(){
+        example.clean()
         val anotherAnswer = mutableListOf<Int>()
         do{
             currentPosition = Random.nextInt(0, testList.size)
+            if(testList[currentPosition].sum() == repeats*3)
+                setTestList(testListId, testList.size)
         }while(testList[currentPosition].sum() >= repeats*3)
         val testCase = testList[currentPosition]
 
@@ -106,12 +110,15 @@ class TestViewModel(): ViewModel() {
                }
            App.getDB().manyTestManyQuestionDao().update(testCase)
        }
-
         setQuestion()
     }
 
     fun setTestList(test_id:Int, window:Int){
-        testList = App.getDB().manyTestManyQuestionDao().getKeysByIdLimitedBy(test_id, window)
+        testListId = test_id
+        testList = App.getDB().manyTestManyQuestionDao().getKeysByIdLimitedBy(testListId, window)
+        if(testList.isEmpty()){
+            //
+        }
     }
     fun returnList():ArrayList<KanjiKey>{
         return variantsOfAnswer

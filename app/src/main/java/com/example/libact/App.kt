@@ -774,13 +774,10 @@ class App: Application() {
     }
     companion object {
         private lateinit var database: AppDatabase
-
         fun getDB() : AppDatabase {
             return database as AppDatabase
         }
     }
 
-    fun getDB():AppDatabase{
-        return database
-    }
+
 }
