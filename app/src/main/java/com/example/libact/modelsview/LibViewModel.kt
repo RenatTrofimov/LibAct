@@ -1,26 +1,38 @@
 package com.example.libact.modelsview
 
 import android.util.Log
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import com.example.libact.App
 import com.example.libact.Kanji
+import com.example.libact.R
 import com.example.libact.surface.Tree
-import com.example.libact.views.DetailsFragment
-import com.example.libact.views.LibFragment
-import com.example.libact.views.LibraryFragment
-import com.example.libact.views.MainActivity
-
+import com.example.libact.views.*
+import kotlinx.android.synthetic.main.library_fragment.view.*
+class
+abstract class BaseViewModel<T:Fragment>(): ViewModel() {
+    private lateinit var fragment:T
+}
+abstract class BaseFragment<T:ViewModel>(id:Int):Fragment(id){
+    private lateinit var viewModel:T
+}
 
 class LibViewModel: ViewModel() {
     //Views
-    private lateinit var libView: LibFragment
-    private lateinit var detailsView: DetailsFragment
-    private lateinit var libraryFragment: LibraryFragment
+    private lateinit var libraryFragment:LibraryFragment
     var isLand = false
     //???
     var tree = Tree<String>("")
     var kanjiList = ArrayList<Kanji>()
     var selectedKanji:Kanji
+
+    init{
+        kanjiList = getList()
+        selectedKanji = kanjiList[0]
+        setTree()
+        Log.i("LibViewModel", "LibViewModel created!")
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -30,15 +42,13 @@ class LibViewModel: ViewModel() {
         selectedKanji = kanji
         setTree()
         if(isLand){
-            detailsView.bind()
+            libraryFragment.bind()
         }else{
-            libraryFragment.openDetailsFragment(detailsView)
+            libraryFragment.setFragment(R.id.main_lib_container, libraryFragment.getDetailsView())
         }
     }
-    fun setViews(lib: LibraryFragment, detailsFragment: DetailsFragment, libFragment: LibFragment){
-        libView = libFragment;
-        detailsView = detailsFragment
-    }
+
+
     private fun getList():ArrayList<Kanji>{
         return ArrayList(App.getDB().kanjiDao().getAll())
     }
@@ -49,10 +59,8 @@ class LibViewModel: ViewModel() {
             tree.addChild(App.getDB().kanjiKeyDao().findById(e).hieroglyph)
         }
     }
-    init{
-        kanjiList = getList()
-        selectedKanji = kanjiList[0]
-        setTree()
-        Log.i("LibViewModel", "LibViewModel created!")
+
+    fun setViews(libraryFragment: LibraryFragment) {
+        this.libraryFragment = libraryFragment
     }
 }

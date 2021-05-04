@@ -1,8 +1,12 @@
 package com.example.libact
 
+import android.view.View
+import android.widget.TextView
 import androidx.room.*
 
-
+abstract class Item(val rootId:Int){
+    abstract fun bind(v: View)
+}
 
 @Dao
 interface DaoBase<T>{
@@ -41,17 +45,20 @@ data class KeyId(
 interface KeyIdDao:DaoBase<KeyId>{
     @Query("SELECT `key` FROM key_id WHERE id = (:id) ")
     fun getKeysById(id: Int): List<Int>
-
 }
 
 
-@Entity(tableName = "kanjiKey")
+@Entity(tableName = "kanjiKey", ignoredColumns = ["rootId"])
 data class KanjiKey(
     @ColumnInfo(name = "key") val hieroglyph: String
-){
+):Item(R.layout.lib_item){
     @PrimaryKey(autoGenerate = true) var id: Int = 0
     override fun toString(): String {
         return hieroglyph
+    }
+    override fun bind(v: View) {
+        val kanjiField: TextView = v.findViewById(R.id.lib_item_hieroglyph_TV)
+        kanjiField.text = hieroglyph
     }
 }
 @Dao

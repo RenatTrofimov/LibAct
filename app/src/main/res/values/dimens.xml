@@ -4,4 +4,5 @@
     <dimen name="textSize">20sp</dimen>
     <dimen name="cardCornerRadius">15dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="spanCount">3</dimen>
 </resources>

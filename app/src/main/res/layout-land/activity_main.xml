@@ -15,15 +15,19 @@
             android:layout_weight="10"
             android:orientation="vertical">
                 <Button
-                    android:layout_width="match_parent"
+                    android:id="@+id/test_btn"
+                    android:layout_width="wrap_content"
                     android:layout_weight="50"
                     android:layout_height="0dp"
-                    android:text="tests"/>
+                    android:text="tests"
+                    android:onClick="onCLickTestBtn"/>
                 <Button
-                    android:layout_width="match_parent"
+                    android:id="@+id/lib_btn"
+                    android:layout_width="wrap_content"
                     android:layout_weight="50"
                     android:layout_height="0dp"
-                    android:text="Lib"/>
+                    android:text="Library"
+                    android:onClick="onCLickLibBtn"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
@@ -32,11 +36,6 @@
             android:id="@+id/main_container"
             android:orientation="vertical"
             >
-                <fragment
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/main_fragment"
-                    />
         </LinearLayout>
 
 </LinearLayout>

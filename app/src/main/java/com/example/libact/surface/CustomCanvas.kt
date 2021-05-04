@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.view.View
 import com.example.libact.KanjiKey
 import kotlinx.coroutines.*
 import java.util.*
@@ -21,7 +20,7 @@ interface OnDrawListener{
     fun draw(canvas: Canvas)
     fun sendTouch(event: MotionEvent)
 }
-class MyHolstForTest(context: Context, attributeSet: AttributeSet): MyHolst<TestCase>(context, attributeSet){
+class CustomCanvasForTest(context: Context, attributeSet: AttributeSet): CustomCanvas<TestCase>(context, attributeSet){
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         thing!!.sendTouch(event!!)
         return super.onTouchEvent(event)
@@ -35,7 +34,7 @@ class MyHolstForTest(context: Context, attributeSet: AttributeSet): MyHolst<Test
         }
     }
 }
-class MyHolstForTree(context: Context, attributeSet: AttributeSet): MyHolst<Tree<String>>(context, attributeSet){
+class CustomCanvasForTree(context: Context, attributeSet: AttributeSet): CustomCanvas<Tree<String>>(context, attributeSet){
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         return super.onTouchEvent(event)
     }
@@ -49,7 +48,7 @@ class MyHolstForTree(context: Context, attributeSet: AttributeSet): MyHolst<Tree
     }
 
 }
-open class MyHolst<T:OnDrawListener>(context: Context, attributeSet: AttributeSet): SurfaceView(context, attributeSet), SurfaceHolder.Callback{
+open class CustomCanvas<T:OnDrawListener>(context: Context, attributeSet: AttributeSet): SurfaceView(context, attributeSet), SurfaceHolder.Callback{
 
     protected var thing:T? = null
     private val surfaceHolder: SurfaceHolder = holder
@@ -221,10 +220,6 @@ class TestCase:OnDrawListener {
             }
             MotionEvent.ACTION_POINTER_UP ->{
                 Log.i("SV", "PU")
-//                for(en in en.iterator()){
-//                    if(en.isSelected)
-//                        en.setBitmap(crop(en.getBitmap()))
-//                }
             }
             else -> {
 

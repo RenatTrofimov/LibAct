@@ -3,66 +3,66 @@ package com.example.libact.views
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.example.libact.R
+import com.example.libact.TestList
 import com.example.libact.modelsview.LibViewModel
 import com.example.libact.surface.SurfaceFragment
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    var tabSelected = 0
-    val tabSelectedStr = "tabSelectedStr"
+    private var tabSelected = 0
+    private val tabSelectedStr = "tabSelectedStr"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(savedInstanceState!= null){
+            tabSelected = savedInstanceState.getInt(tabSelectedStr)
+        }
         setContentView(R.layout.activity_main)
-        when(tabSelected){
-            0 -> {
-
-            }
-            1 ->{
-
-            }
+        landInit()
+    }
+    fun onCLickTestBtn(v: View){
+        if(tabSelected == 0){
+            tabSelected = 1
+            landInit()
+        }
+    }
+    fun onCLickLibBtn(v: View){
+        if(tabSelected == 1){
+            tabSelected = 0
+            landInit()
         }
     }
     private fun landInit(){
-        val libFragment = LibFragment()
-        val detailsFragment = DetailsFragment()
-
         Log.i("LibViewModel", "Called ViewModelProvider.get")
-
-        val libModel = ViewModelProviders.of(this).get(LibViewModel::class.java)
-
-        libModel.setViews( detailsFragment, libFragment)
-
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
+        Log.i("O", tabSelected.toString() )
+        when(tabSelected){
+            0 -> {
+                val libModel = ViewModelProviders.of(this).get(LibViewModel::class.java)
+                libModel.isLand = isLandOrientation()
+                val libraryFragment = LibraryFragment()
 
-        if (!isLandOrientation()){
-            fragmentTransaction.replace(R.id.main_container, libFragment)
-        }else{
-
+                fragmentTransaction.replace(R.id.main_container, libraryFragment)
+            }
+            1 ->{
+                val testList = TestList()
+                fragmentTransaction.replace(R.id.main_container, testList)
+            }
         }
         fragmentTransaction.commit()
     }
-    fun openDetailsFragment(fragment:  DetailsFragment){
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction().addToBackStack(null)
-        fragmentTransaction.replace(R.id.main_container, fragment)
-        fragmentTransaction.commit()
-    }
-    fun isLandOrientation():Boolean{
+
+    private fun isLandOrientation():Boolean{
         return resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     }
 
-    fun testSurface(fragment: SurfaceFragment){
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.main_container, fragment)
-        fragmentTransaction.commit()
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
+        Log.i("MA", "onSaveInstanceState")
         super.onSaveInstanceState(outState)
         outState.putInt(tabSelectedStr, tabSelected)
     }

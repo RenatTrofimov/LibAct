@@ -24,12 +24,14 @@
             android:layout_width="0dp"
             android:layout_weight="50"
             android:layout_height="match_parent"
-            android:text="tests"/>
+            android:text="tests"
+            android:onClick="onCLickTestBtn"/>
         <Button
             android:id="@+id/lib_btn"
             android:layout_width="0dp"
             android:layout_weight="50"
             android:layout_height="match_parent"
-            android:text="Library"/>
+            android:text="Library"
+            android:onClick="onCLickLibBtn"/>
     </LinearLayout>
 </LinearLayout>

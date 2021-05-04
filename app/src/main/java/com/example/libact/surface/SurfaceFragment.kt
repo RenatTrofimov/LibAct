@@ -5,22 +5,21 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.libact.Kanji
 import com.example.libact.KanjiKey
 import com.example.libact.R
-import com.example.libact.lib_recycler_view.LibAdapter
+import com.example.libact.lib_recycler_view.ItemAdapter
 import com.example.libact.modelsview.TestViewModel
 import kotlinx.android.synthetic.main.test_fragment.*
 
 class SurfaceFragment: Fragment(R.layout.test_fragment) {
-    private var adapter:LibAdapter<KanjiKey>? = null
+    private var adapter:ItemAdapter<KanjiKey>? = null
     private lateinit var viewModel:TestViewModel
 
     private fun adapterOnClick(kanji: KanjiKey) {
         viewModel.example.add(kanji)
     }
     fun setQuestion(title:String){
-        adapter = LibAdapter<KanjiKey>(viewModel.returnList()){KanjiKey -> adapterOnClick(KanjiKey)}
+        adapter = ItemAdapter<KanjiKey>(viewModel.returnList()){ KanjiKey -> adapterOnClick(KanjiKey)}
         rv_test_fragment.adapter = adapter
         question_tv.text = title
     }
