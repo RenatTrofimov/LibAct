@@ -25,7 +25,9 @@ class TestViewModel(): ViewModel() {
         return kunCheck + onCheck + transCheck
     }
     private lateinit var testList:List<ManyTestManyQuestion>
-
+    fun reSetQuestion(){
+        activity.setQuestion(question.title)
+    }
     fun setQuestion(){
         example.clean()
         val anotherAnswer = mutableListOf<Int>()
@@ -87,7 +89,7 @@ class TestViewModel(): ViewModel() {
                 else -> {
                     repeats
                 }} >=  repeats)
-                fragment.setQuestion(question.title)
+                activity.setQuestion(question.title)
     }
 
     fun check(){
@@ -123,8 +125,8 @@ class TestViewModel(): ViewModel() {
     }
     class Question(
        val title: String,
-         val rightAnswer: List<Int>,
-        val typeQuestion: Int
+       val rightAnswer: List<Int>,
+       val typeQuestion: Int
     ){
         fun checkRightAnswer(answer:List<Int>):Boolean{
             return (answer.containsAll(rightAnswer))

@@ -32,12 +32,7 @@ class SurfaceFragment: Fragment(R.layout.test_fragment), Actions<KanjiKey>{
         super.onViewCreated(view, savedInstanceState)
         Log.i("F", "onViewCreated")
         viewModel.setQuestion()
-        done_btn.setOnClickListener {
-            viewModel.check()
-        }
-        clear_btn.setOnClickListener {
-            viewModel.example.clean()
-        }
+
     }
     override fun onResume() {
         super.onResume()
