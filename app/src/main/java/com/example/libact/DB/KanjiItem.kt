@@ -72,10 +72,3 @@ interface KanjiKeyDao:DaoBase<KanjiKey> {
     @Query("SELECT * FROM kanjiKey WHERE id = (:id)")
     fun findById(id: Int): KanjiKey
 }
-@Database(entities = [Kanji::class, KanjiKey::class, KeyId::class, ManyTestManyQuestion::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun kanjiDao(): KanjiDao
-    abstract fun kanjiKeyDao(): KanjiKeyDao
-    abstract fun keyIdDao(): KeyIdDao
-    abstract fun manyTestManyQuestionDao(): ManyTestManyQuestionDao
-}

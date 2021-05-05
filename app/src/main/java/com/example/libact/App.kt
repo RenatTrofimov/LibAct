@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.libact.DB.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -752,6 +753,8 @@ class App: Application() {
                         getDB().keyIdDao().insertItem(KeyId(120,25))
                         getDB().keyIdDao().insertItem(KeyId(120,113))
 
+                        getDB().Test
+
                         getDB().manyTestManyQuestionDao().insertItem(
                             com.example.libact.ManyTestManyQuestion(
                                 1, 1, 0, 0, 0
@@ -775,7 +778,7 @@ class App: Application() {
     companion object {
         private lateinit var database: AppDatabase
         fun getDB() : AppDatabase {
-            return database as AppDatabase
+            return database
         }
     }
 
