@@ -3,7 +3,7 @@ package com.example.libact.DB
 import android.view.View
 import android.widget.TextView
 import androidx.room.*
-import com.example.libact.BaseDao
+import com.example.libact.DaoBase
 import com.example.libact.Item
 import com.example.libact.R
 
@@ -24,7 +24,7 @@ data class Test(
     }
 }
 @Dao
-interface TestDao: BaseDao<Test> {
+interface TestDao: DaoBase<Test> {
     @Query("SELECT * FROM test")
     fun getAll(): List<Test>
 

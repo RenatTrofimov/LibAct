@@ -3,14 +3,7 @@ package com.example.libact
 import android.view.View
 import android.widget.TextView
 import androidx.room.*
-interface BaseDao<T> {
-    @Insert
-    fun insertAll(vararg users: T)
-    @Insert
-    fun insertItem(user: T)
-    @Delete
-    fun delete(user: T)
-}
+
 @Entity(tableName = "kanji", ignoredColumns = ["rootId"])
 data class Kanji(
     @ColumnInfo(name = "hieroglyph") val hieroglyph: String,
@@ -32,7 +25,7 @@ data class Kanji(
 
 
 @Dao
-interface KanjiDao:BaseDao<Kanji> {
+interface KanjiDao:DaoBase<Kanji> {
     @Query("SELECT * FROM kanji")
     fun getAll(): List<Kanji>
 

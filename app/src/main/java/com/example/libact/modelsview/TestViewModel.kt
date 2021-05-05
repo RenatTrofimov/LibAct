@@ -1,10 +1,7 @@
 package com.example.libact.modelsview
 
 import androidx.lifecycle.ViewModel
-import com.example.libact.App
-import com.example.libact.Kanji
-import com.example.libact.KanjiKey
-import com.example.libact.ManyTestManyQuestion
+import com.example.libact.*
 import com.example.libact.surface.TestCase
 import com.example.libact.surface.SurfaceFragment
 import java.util.*
@@ -16,6 +13,7 @@ import kotlin.random.nextInt
 
 class TestViewModel(): ViewModel() {
     lateinit var fragment:SurfaceFragment
+    lateinit var activity: TestActivity
     private lateinit var question:Question
     private val variantsOfAnswer = ArrayList<KanjiKey>()
     var currentPosition = 0

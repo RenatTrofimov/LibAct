@@ -7,6 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.libact.DB.AppDatabase
+import com.example.libact.DB.Test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -753,7 +754,7 @@ class App: Application() {
                         getDB().keyIdDao().insertItem(KeyId(120,25))
                         getDB().keyIdDao().insertItem(KeyId(120,113))
 
-                        getDB().Test
+                        getDB().testDao().insertItem(Test("N5","0/0"))
 
                         getDB().manyTestManyQuestionDao().insertItem(
                             com.example.libact.ManyTestManyQuestion(
