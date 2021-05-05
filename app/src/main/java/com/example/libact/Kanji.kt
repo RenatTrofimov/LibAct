@@ -20,6 +20,20 @@ data class Kanji(
         kanjiField.text = hieroglyph
     }
 }
+
+@Entity(tableName = "kanji", ignoredColumns = ["rootId"])
+data class Test(
+    @ColumnInfo(name = "name") val name: String
+):Item(R.layout.lib_item) {
+    @PrimaryKey(autoGenerate = true) var id: Int = 0
+    override fun toString(): String {
+        return name
+    }
+    override fun bind(v: View) {
+        val kanjiField: TextView = v.findViewById(R.id.lib_item_hieroglyph_TV)
+        kanjiField.text = name
+    }
+}
 interface BaseDao<T> {
     @Insert
     fun insertAll(vararg users: T)
