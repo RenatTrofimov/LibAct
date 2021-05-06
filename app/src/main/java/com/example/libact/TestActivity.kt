@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
+import com.example.libact.interfaces.Actions
 import com.example.libact.lib_recycler_view.ItemAdapter
 import com.example.libact.modelsview.TestViewModel
 import kotlinx.android.synthetic.main.activity_test.*
@@ -40,6 +41,7 @@ class TestActivity : AppCompatActivity(), Actions<KanjiKey> {
         clear.setOnClickListener {
             viewModel.example.clean()
         }
+
     }
     override fun onSaveInstanceState(outState: Bundle) {
         Log.i("TA", "onSaveInstanceState")

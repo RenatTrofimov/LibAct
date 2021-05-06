@@ -3,7 +3,7 @@ package com.example.libact.lib_recycler_view
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.libact.Actions
+import com.example.libact.interfaces.Actions
 import com.example.libact.Item
 
 class ItemAdapter<T: Item>(private val list: ArrayList<T>, private val act: Actions<T>): RecyclerView.Adapter<ItemViewHolder<T>>() {

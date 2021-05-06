@@ -3,9 +3,11 @@ package com.example.libact.DB
 import android.view.View
 import android.widget.TextView
 import androidx.room.*
-import com.example.libact.DaoBase
-import com.example.libact.Item
+import com.example.libact.*
 import com.example.libact.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 
 @Entity(tableName = "test", ignoredColumns = ["rootId"])
 data class Test(
@@ -30,4 +32,12 @@ interface TestDao: DaoBase<Test> {
 
     @Query("SELECT * FROM test WHERE id = (:id)")
     fun findById(id: Int): Test
+    suspend fun createTest(list:ArrayList<Kanji>, test:Test): Boolean {
+        insertItem(test)
+        val temp = getAll().last()
+        list.forEach {
+            App.getDB().manyTestManyQuestionDao().insertItem(ManyTestManyQuestion(temp.id, it.id, 0,0,0))
+        }
+        return true
+    }
 }

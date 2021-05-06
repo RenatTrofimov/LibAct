@@ -10,5 +10,6 @@
     <string name="done">done</string>
     <string name="clear">clear</string>
     <string name="show">show</string>
+    <string name="create_test">Create</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.example.libact.modelsview
 
+import android.content.Context
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -10,12 +11,19 @@ import com.example.libact.R
 import com.example.libact.surface.Tree
 import com.example.libact.views.*
 import kotlinx.android.synthetic.main.library_fragment.view.*
-class
+
 abstract class BaseViewModel<T:Fragment>(): ViewModel() {
     private lateinit var fragment:T
 }
 abstract class BaseFragment<T:ViewModel>(id:Int):Fragment(id){
-    private lateinit var viewModel:T
+    private lateinit var viewModel: T
+    init{
+        viewModel = viewModel.javaClass.newInstance()
+    }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        viewModel = ViewModelProviders.of(requireActivity()).get(viewModel.javaClass)
+    }
 }
 
 class LibViewModel: ViewModel() {

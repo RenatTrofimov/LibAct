@@ -1,5 +1,6 @@
 package com.example.libact.modelsview
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import com.example.libact.*
 import com.example.libact.surface.TestCase
@@ -12,7 +13,7 @@ import kotlin.random.nextInt
 
 
 class TestViewModel(): ViewModel() {
-    lateinit var fragment:SurfaceFragment
+    @SuppressLint("StaticFieldLeak")
     lateinit var activity: TestActivity
     private lateinit var question:Question
     private val variantsOfAnswer = ArrayList<KanjiKey>()

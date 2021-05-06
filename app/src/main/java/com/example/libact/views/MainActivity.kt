@@ -5,13 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.example.libact.R
 import com.example.libact.TestList
 import com.example.libact.modelsview.LibViewModel
-import com.example.libact.surface.SurfaceFragment
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private var tabSelected = 0
@@ -46,7 +43,6 @@ class MainActivity : AppCompatActivity() {
                 val libModel = ViewModelProviders.of(this).get(LibViewModel::class.java)
                 libModel.isLand = isLandOrientation()
                 val libraryFragment = LibraryFragment()
-
                 fragmentTransaction.replace(R.id.main_container, libraryFragment)
             }
             1 ->{
@@ -55,6 +51,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         fragmentTransaction.commit()
+
     }
 
     private fun isLandOrientation():Boolean{
