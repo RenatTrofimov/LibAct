@@ -15,13 +15,18 @@ import kotlinx.coroutines.async
 class App: Application() {
     val Context.myApp: App
         get() = applicationContext as App
+
     override fun onCreate() {
         super.onCreate()
         Log.i("App", "OnCreate")
-        database = Room.databaseBuilder(
+        database =
+            Room
+            .databaseBuilder(
             this,
             AppDatabase::class.java,
-            "database").allowMainThreadQueries().fallbackToDestructiveMigration()
+            "database")
+            .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
@@ -768,10 +773,12 @@ class App: Application() {
                             com.example.libact.ManyTestManyQuestion(
                                 1, 54, 0, 0, 0
                             ))
+                        isBuilded = true
                     }
                 }
                 override fun onOpen(db: SupportSQLiteDatabase) {
                     super.onOpen(db)
+                    isBuilded = true
                 }
             })
             .build()
@@ -781,6 +788,7 @@ class App: Application() {
         fun getDB() : AppDatabase {
             return database
         }
+        var isBuilded = false
     }
 
 

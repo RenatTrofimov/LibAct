@@ -11,14 +11,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".CreateNewTest"></activity>
-        <activity android:name=".TestActivity" />
-        <activity android:name=".views.MainActivity">
+        <activity
+            android:name=".Launcher"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_launcher"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".CreateNewTest" />
+        <activity android:name=".views.TestActivity" />
+        <activity android:name=".views.MainActivity">
         </activity>
     </application>
 

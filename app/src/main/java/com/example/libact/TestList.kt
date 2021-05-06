@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.example.libact.DB.Test
 import com.example.libact.interfaces.Actions
 import com.example.libact.lib_recycler_view.ItemAdapter
+import com.example.libact.views.TestActivity
 import kotlinx.android.synthetic.main.fragment_test_list.*
 import java.util.*
 class TestList : Fragment(R.layout.fragment_test_list), Actions<Test> {
@@ -31,6 +32,7 @@ class TestList : Fragment(R.layout.fragment_test_list), Actions<Test> {
         Log.i("I","onLongClick")
         return true
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = ItemAdapter(viewModel.testList,this)

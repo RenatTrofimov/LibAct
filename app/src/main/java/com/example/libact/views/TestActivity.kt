@@ -1,9 +1,11 @@
-package com.example.libact
+package com.example.libact.views
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
+import com.example.libact.KanjiKey
+import com.example.libact.R
 import com.example.libact.interfaces.Actions
 import com.example.libact.lib_recycler_view.ItemAdapter
 import com.example.libact.modelsview.TestViewModel
@@ -12,11 +14,13 @@ import kotlinx.android.synthetic.main.test_fragment.question_tv
 import kotlinx.android.synthetic.main.test_fragment.rv_test_fragment
 
 class TestActivity : AppCompatActivity(), Actions<KanjiKey> {
+
     private val isRecreatedStr = "isRecreated"
     var isRecreated = false
 
     private var adapter:ItemAdapter<KanjiKey>? = null
     private lateinit var viewModel:TestViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test)

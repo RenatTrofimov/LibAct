@@ -4,12 +4,9 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import com.example.libact.*
 import com.example.libact.surface.TestCase
-import com.example.libact.surface.SurfaceFragment
-import java.util.*
+import com.example.libact.views.TestActivity
 import kotlin.collections.ArrayList
 import kotlin.random.Random
-import kotlin.random.nextInt
-
 
 
 class TestViewModel(): ViewModel() {

@@ -11,5 +11,8 @@
     <string name="clear">clear</string>
     <string name="show">show</string>
     <string name="create_test">Create</string>
+    <string name="title_activity_launcher">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

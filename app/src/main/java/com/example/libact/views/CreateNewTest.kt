@@ -2,6 +2,7 @@ package com.example.libact
 
 import android.content.Context
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
@@ -18,6 +19,8 @@ import java.util.*
 class CreateNewTest : AppCompatActivity() {
     private var testName:String = ""
     private val testNameString = "testName"
+    private var createFinish:Boolean = true
+    private val createFinishString = "createFinish"
     private lateinit var createListVM:CreateListVM
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,20 +46,23 @@ class CreateNewTest : AppCompatActivity() {
 
         }
     }
-    suspend fun shit(){
-        val temp = createNewTest()
+
+    private suspend fun shit(){
+        val temp = createNewTestAsync()
         if(temp.await()){
             delay(1000L)
             this.finish()
         }
     }
-    fun createNewTest() =  GlobalScope.async(Dispatchers.IO) {
+    private fun createNewTestAsync() =  GlobalScope.async(Dispatchers.IO) {
         App.getDB().testDao().createTest(createListVM.getList(), Test(testName,""))
     }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         testName = editText.text.toString()
+
         outState.putString(testNameString, testName)
+        outState.putBoolean(createFinishString, createFinish)
     }
 }
 class CreateListVM:ViewModel(){

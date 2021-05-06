@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".TestActivity"
+    tools:context=".views.TestActivity"
     android:gravity="center">
     <TextView
         android:id="@+id/question_tv"
@@ -17,7 +17,7 @@
         android:textSize="@dimen/title_text_size"
         />
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal">
