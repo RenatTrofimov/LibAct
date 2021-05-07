@@ -34,7 +34,6 @@ interface ManyTestManyQuestionDao:DaoBase<ManyTestManyQuestion>{
     fun getKeysById(id: Int): List<ManyTestManyQuestion>
     @Query("SELECT * FROM manyTestManyQuestion WHERE test_id = (:id) AND `kun` + `on` + `trans` < 3 LIMIT (:limit)")
     fun getKeysByIdLimitedBy(id: Int, limit:Int): List<ManyTestManyQuestion>
-
 }
 @Entity(tableName = "key_id", primaryKeys = ["id", "key"])
 data class KeyId(

@@ -1,4 +1,4 @@
-package com.example.libact
+package com.example.libact.views
 
 import android.content.Context
 import android.content.Intent
@@ -8,11 +8,18 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
+import androidx.room.Update
+import com.example.libact.App
+import com.example.libact.CreateNewTest
 import com.example.libact.DB.Test
+import com.example.libact.DialogMessage
+import com.example.libact.R
 import com.example.libact.interfaces.Actions
 import com.example.libact.lib_recycler_view.ItemAdapter
-import com.example.libact.views.TestActivity
 import kotlinx.android.synthetic.main.fragment_test_list.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import java.util.*
 class TestList : Fragment(R.layout.fragment_test_list), Actions<Test> {
     lateinit var viewModel: TestListVM
@@ -29,21 +36,36 @@ class TestList : Fragment(R.layout.fragment_test_list), Actions<Test> {
         startActivity(intent)
     }
     override fun onLongClick(item: Test): Boolean {
-        Log.i("I","onLongClick")
+        val dialogMessage = DialogMessage(requireActivity(), "Удаление теста", "Удалить тест?")
+        dialogMessage.positiveAction {
+            GlobalScope.async(Dispatchers.IO) {
+                App.getDB().testDao().deleteTest(item)
+            }
+            viewModel.updateList()
+            updateRecyclerView()
+        }
+        dialogMessage.negativeAction {  }
+        dialogMessage.show()
         return true
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun updateRecyclerView(){
         adapter = ItemAdapter(viewModel.testList,this)
         rv_test_list.adapter = adapter
+    }
+    override fun onResume() {
+        updateRecyclerView()
         floatingActionButton.setOnClickListener {
             val intent = Intent(requireActivity(), CreateNewTest::class.java)
             startActivity(intent)
         }
+        super.onResume()
+    }
+    class TestListVM: ViewModel(){
+        var testList: ArrayList<Test> = ArrayList(App.getDB().testDao().getAll())
+        fun updateList(){
+            testList = ArrayList(App.getDB().testDao().getAll())
+        }
     }
 }
 
-class TestListVM: ViewModel(){
-    var testList: ArrayList<Test> = ArrayList(App.getDB().testDao().getAll())
-}
+

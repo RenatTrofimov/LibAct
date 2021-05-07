@@ -32,6 +32,13 @@ interface TestDao: DaoBase<Test> {
 
     @Query("SELECT * FROM test WHERE id = (:id)")
     fun findById(id: Int): Test
+    suspend fun deleteTest(test:Test){
+        val temp = App.getDB().manyTestManyQuestionDao().getKeysById(test.id)
+        delete(test)
+        temp.forEach {
+            App.getDB().manyTestManyQuestionDao().delete(it)
+        }
+    }
     suspend fun createTest(list:ArrayList<Kanji>, test:Test): Boolean {
         insertItem(test)
         val temp = getAll().last()

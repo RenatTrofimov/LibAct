@@ -7,7 +7,6 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.example.libact.R
-import com.example.libact.TestList
 import com.example.libact.modelsview.LibViewModel
 
 class MainActivity : AppCompatActivity() {

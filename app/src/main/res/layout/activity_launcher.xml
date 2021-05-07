@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="?attr/fullscreenBackgroundColor"
     android:theme="@style/ThemeOverlay.LibAct.FullscreenContainer"
-    tools:context=".Launcher"
+    tools:context=".views.Launcher"
     android:gravity="center">
     <include layout="@layout/lib_item"/>
 </LinearLayout>

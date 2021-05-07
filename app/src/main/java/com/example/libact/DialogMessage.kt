@@ -12,13 +12,22 @@ class DialogMessage(context: Context,
         dlgAlert.setMessage(message)
         dlgAlert.setTitle(title)
         dlgAlert.setCancelable(true)
+
+    }
+    fun positiveAction(action:() -> Unit){
         dlgAlert.setPositiveButton("Ок",
             DialogInterface.OnClickListener { dialog, which ->
-                //dismiss the dialog
+                action()
             })
-        dlgAlert.create()
+    }
+    fun negativeAction(action:() -> Unit){
+        dlgAlert.setNegativeButton("Отмена",
+            DialogInterface.OnClickListener { dialog, which ->
+                action()
+            })
     }
     fun show(){
+        dlgAlert.create()
         dlgAlert.show()
     }
 }

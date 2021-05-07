@@ -30,18 +30,25 @@ class CreateNewTest : AppCompatActivity() {
             editText.setText(testName)
         }
         create_test_btn.setOnClickListener{
+
+            lateinit var dialogMessage: DialogMessage
             testName = editText.text.toString()
             if(testName.isNotEmpty()){
                 if(createListVM.getList().isNotEmpty()){
                     GlobalScope.launch{
                         shit()
                     }
-                    DialogMessage(this, "Создание теста", "Создание теста...").show()
+                    dialogMessage = DialogMessage(this, "Создание теста", "Создание теста...")
+                    dialogMessage.positiveAction {  }
+                    dialogMessage.show()
                 }else{
-                    DialogMessage(this, "Предупреждение", "В тесте должен быть хотя бы один вопрос!").show()
+                    dialogMessage = DialogMessage(this, "Предупреждение", "В тесте должен быть хотя бы один вопрос!")
+                    dialogMessage.positiveAction {  }
+                    dialogMessage.show()
                 }
             }else{
                 DialogMessage(this, "Предупреждение", "Поле имени теста должно быть заполнено!").show()
+
             }
 
         }

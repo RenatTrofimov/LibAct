@@ -12,9 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name=".Launcher"
+            android:name=".views.Launcher"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_launcher"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
