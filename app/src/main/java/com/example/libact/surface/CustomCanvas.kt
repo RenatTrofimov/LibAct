@@ -179,7 +179,7 @@ class TestCase:OnDrawListener {
                 secondDis/=temp
             }
         }
-        Log.i("result", "${sqrt(firstDis)}" + " ${sqrt(secondDis)}")
+        Log.i("result", "${sqrt(firstDis)}" + " ${sqrt(secondDis)} " + count*100/(trueResult.width*trueResult.height))
         return count*100/(trueResult.width*trueResult.height) > 50
     }
     override fun draw(canvas: Canvas) {

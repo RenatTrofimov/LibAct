@@ -7,6 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import com.example.libact.DB.Test
 import com.example.libact.lib_recycler_view.ItemAdapter
 import com.example.libact.views.LibFragment
@@ -30,7 +31,6 @@ class CreateNewTest : AppCompatActivity() {
             editText.setText(testName)
         }
         create_test_btn.setOnClickListener{
-
             lateinit var dialogMessage: DialogMessage
             testName = editText.text.toString()
             if(testName.isNotEmpty()){
@@ -61,13 +61,12 @@ class CreateNewTest : AppCompatActivity() {
             this.finish()
         }
     }
-    private fun createNewTestAsync() =  GlobalScope.async(Dispatchers.IO) {
+    private fun createNewTestAsync() =  lifecycleScope.async(Dispatchers.IO) {
         App.getDB().testDao().createTest(createListVM.getList(), Test(testName,""))
     }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         testName = editText.text.toString()
-
         outState.putString(testNameString, testName)
         outState.putBoolean(createFinishString, createFinish)
     }

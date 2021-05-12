@@ -8,7 +8,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
-import androidx.room.Update
+import androidx.lifecycle.lifecycleScope
 import com.example.libact.App
 import com.example.libact.CreateNewTest
 import com.example.libact.DB.Test
@@ -19,6 +19,7 @@ import com.example.libact.lib_recycler_view.ItemAdapter
 import kotlinx.android.synthetic.main.fragment_test_list.*
 import kotlinx.coroutines.*
 import java.util.*
+
 class TestList : Fragment(R.layout.fragment_test_list), Actions<Test> {
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
     lateinit var viewModel: TestListVM
@@ -43,10 +44,11 @@ class TestList : Fragment(R.layout.fragment_test_list), Actions<Test> {
     override fun onLongClick(item: Test): Boolean {
         val dialogMessage = DialogMessage(requireActivity(), "Удаление теста", "Удалить тест?")
         dialogMessage.positiveAction {
-            scope.launch(Dispatchers.IO) {
-                App.getDB().testDao().deleteTest(item)
+            lifecycleScope.launch {
+                val temp = async { App.getDB().testDao().deleteTest(item) }
+                if(temp.await())
+                    updateRecyclerView()
             }
-            updateRecyclerView()
         }
         dialogMessage.negativeAction {  }
         dialogMessage.show()
