@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.min
+import kotlin.math.sqrt
 
 
 interface OnDrawListener{
@@ -145,24 +146,41 @@ class TestCase:OnDrawListener {
         c.drawColor(Color.WHITE)
         c.drawBitmap(drawTextBitmap(kanji, result!!.width,result!!.height), 0f,0f, Paint())
         trueResult = crop(Bitmap.createScaledBitmap(trueResult, 128,128, false))
-        var varTempResult = crop(Bitmap.createScaledBitmap(result!!, 128,128, false))
-        varTempResult = Bitmap.createScaledBitmap(varTempResult, trueResult.width, trueResult.height, false)
-        var count = 0
-        var first = 0
-        var second = 0
-        for(x in 0 until trueResult.width){
-            for(y in 0 until trueResult.height){
-                first+=abs(varTempResult.getPixel(x, y))/1000
-                second+=abs(trueResult.getPixel(x, y))/1000
-                if(varTempResult.getPixel(x, y) == trueResult.getPixel(x, y)){
-                    count++
+        var tempResult = crop(Bitmap.createScaledBitmap(result!!, 128,128, false))
+        tempResult = Bitmap.createScaledBitmap(tempResult, trueResult.width, trueResult.height, false)
+        var count = 0f
+        var firstAvg = 0f
+        var secondAvg = 0f
+        var firstDis = 0f
+        var secondDis = 0f
+        for(i in 0 until 2) {
+            for (x in 0 until trueResult.width) {
+                for (y in 0 until trueResult.height) {
+                    when(i){
+                        0 ->{
+                            firstAvg += abs(tempResult.getPixel(x, y))
+                            secondAvg += abs(trueResult.getPixel(x, y))
+                            if (tempResult.getPixel(x, y) == trueResult.getPixel(x, y)) {
+                                count++
+                            }
+                        }
+                        1 ->{
+                            var temp = (tempResult.getPixel(x, y) - firstAvg)
+                            firstDis =+ temp*temp
+                            temp = (trueResult.getPixel(x, y) - secondAvg)
+                            secondDis =+ temp*temp
+                        }
+                    }
                 }
+                val temp = trueResult.width*trueResult.height
+                secondAvg/=temp
+                firstAvg/=temp
+                firstDis/=temp
+                secondDis/=temp
             }
         }
-        Log.i("result", "${
-            count*100/(trueResult.width*trueResult.height)
-        }")
-        return count*100/(trueResult.width*trueResult.height) > 65
+        Log.i("result", "${sqrt(firstDis)}" + " ${sqrt(secondDis)}")
+        return count*100/(trueResult.width*trueResult.height) > 50
     }
     override fun draw(canvas: Canvas) {
         if(!draw)

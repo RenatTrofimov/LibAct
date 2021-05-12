@@ -17,16 +17,21 @@ import com.example.libact.R
 import com.example.libact.interfaces.Actions
 import com.example.libact.lib_recycler_view.ItemAdapter
 import kotlinx.android.synthetic.main.fragment_test_list.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import java.util.*
 class TestList : Fragment(R.layout.fragment_test_list), Actions<Test> {
+    private val scope = CoroutineScope(Job() + Dispatchers.IO)
     lateinit var viewModel: TestListVM
     private lateinit var adapter:ItemAdapter<Test>
     override fun onAttach(context: Context) {
         super.onAttach(context)
         viewModel = ViewModelProviders.of(requireActivity()).get(TestListVM::class.java)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        adapter = ItemAdapter(viewModel.testList,this)
+        rv_test_list.adapter = adapter
     }
     override fun onClick(item:Test){
         Log.i("I","onClick")
@@ -38,10 +43,9 @@ class TestList : Fragment(R.layout.fragment_test_list), Actions<Test> {
     override fun onLongClick(item: Test): Boolean {
         val dialogMessage = DialogMessage(requireActivity(), "Удаление теста", "Удалить тест?")
         dialogMessage.positiveAction {
-            GlobalScope.async(Dispatchers.IO) {
+            scope.launch(Dispatchers.IO) {
                 App.getDB().testDao().deleteTest(item)
             }
-            viewModel.updateList()
             updateRecyclerView()
         }
         dialogMessage.negativeAction {  }
@@ -49,8 +53,9 @@ class TestList : Fragment(R.layout.fragment_test_list), Actions<Test> {
         return true
     }
     private fun updateRecyclerView(){
-        adapter = ItemAdapter(viewModel.testList,this)
-        rv_test_list.adapter = adapter
+        viewModel.updateList()
+        adapter.setItems(viewModel.testList)
+        adapter.notifyDataSetChanged()
     }
     override fun onResume() {
         updateRecyclerView()

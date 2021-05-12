@@ -32,13 +32,18 @@ class TestActivity : AppCompatActivity(), Actions<KanjiKey> {
 
         if(!isRecreated){
             val id = intent.getIntExtra("ID", 1)
-            viewModel.setTestList(id, 10)
-            viewModel.setQuestion()
+            if(viewModel.setTestList(id, 10)){
+                viewModel.warring()
+            }else{
+                viewModel.setQuestion()
+            }
             isRecreated = false
+
+
         }else{
             viewModel.reSetQuestion()
         }
-        surfaceView_test_fragment.set(viewModel.example)
+
         done.setOnClickListener {
             viewModel.check()
         }
@@ -46,6 +51,11 @@ class TestActivity : AppCompatActivity(), Actions<KanjiKey> {
             viewModel.example.clean()
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        surfaceView_test_fragment.set(viewModel.example)
     }
     override fun onSaveInstanceState(outState: Bundle) {
         Log.i("TA", "onSaveInstanceState")

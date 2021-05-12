@@ -7,12 +7,14 @@ import androidx.appcompat.app.AlertDialog
 class DialogMessage(context: Context,
                     title:String,
                     message: String){
+    companion object{
+        val warning = "Предупреждение"
+    }
     private val dlgAlert: AlertDialog.Builder = AlertDialog.Builder(context)
     init{
         dlgAlert.setMessage(message)
         dlgAlert.setTitle(title)
         dlgAlert.setCancelable(true)
-
     }
     fun positiveAction(action:() -> Unit){
         dlgAlert.setPositiveButton("Ок",

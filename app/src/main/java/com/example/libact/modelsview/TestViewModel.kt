@@ -32,7 +32,8 @@ class TestViewModel(): ViewModel() {
         do{
             currentPosition = Random.nextInt(0, testList.size)
             if(testList[currentPosition].sum() == repeats*3)
-                setTestList(testListId, testList.size)
+                if(setTestList(testListId, testList.size))
+                    return
         }while(testList[currentPosition].sum() >= repeats*3)
         val testCase = testList[currentPosition]
 
@@ -111,20 +112,27 @@ class TestViewModel(): ViewModel() {
         setQuestion()
     }
 
-    fun setTestList(test_id:Int, window:Int){
+    fun setTestList(test_id:Int, window:Int):Boolean{
         testListId = test_id
         testList = App.getDB().manyTestManyQuestionDao().getKeysByIdLimitedBy(testListId, window)
         if(testList.isEmpty()){
-            //
+            warring()
         }
+        return testList.isEmpty()
+    }
+    fun warring(){
+        val temp = DialogMessage(activity, "Предупреждение", "Тест кончился, начать заново?")
+        temp.negativeAction { activity.finish() }
+        temp.positiveAction {  }
+        temp.show()
     }
     fun returnList():ArrayList<KanjiKey>{
         return variantsOfAnswer
     }
     class Question(
-       val title: String,
-       val rightAnswer: List<Int>,
-       val typeQuestion: Int
+        val title: String,
+        private val rightAnswer: List<Int>,
+        val typeQuestion: Int
     ){
         fun checkRightAnswer(answer:List<Int>):Boolean{
             return (answer.containsAll(rightAnswer))
