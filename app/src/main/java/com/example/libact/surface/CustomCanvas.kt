@@ -2,6 +2,8 @@ package com.example.libact.surface
 
 import android.content.Context
 import android.graphics.*
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -18,18 +20,22 @@ import kotlin.math.sqrt
 
 
 interface OnDrawListener{
-    fun draw(canvas: Canvas)
+    fun draw(canvas: Canvas):Boolean
     fun sendTouch(event: MotionEvent)
+    val isChange:AtomicBoolean
 }
 class CustomCanvasForTest(context: Context, attributeSet: AttributeSet): CustomCanvas<TestCase>(context, attributeSet){
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        thing!!.sendTouch(event!!)
+        thing?.let{
+            it.sendTouch(event!!)
+            send(it)
+        }
         return super.onTouchEvent(event)
     }
     override fun surfaceCreated(holder: SurfaceHolder?) {
         super.surfaceCreated(holder)
         setOnClickListener{
-            GlobalScope.async(Dispatchers.Default) {
+            scope.launch {
                 send(thing!!)
             }
         }
@@ -43,14 +49,14 @@ class CustomCanvasForTree(context: Context, attributeSet: AttributeSet): CustomC
         render()
     }
     private fun render(){
-        GlobalScope.launch {
+        scope.launch {
             send(thing!!)
         }
     }
 
 }
 open class CustomCanvas<T:OnDrawListener>(context: Context, attributeSet: AttributeSet): SurfaceView(context, attributeSet), SurfaceHolder.Callback{
-
+    val scope = CoroutineScope(Job()+Dispatchers.Default)
     protected var thing:T? = null
     private val surfaceHolder: SurfaceHolder = holder
     private val isRunning = AtomicBoolean(false)
@@ -58,24 +64,28 @@ open class CustomCanvas<T:OnDrawListener>(context: Context, attributeSet: Attrib
         Log.i("SV", "init")
         this.surfaceHolder.addCallback(this)
         surfaceHolder.setFormat(PixelFormat.TRANSPARENT)
-
     }
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
         Log.i("SV", "surfaceChanged")
+        thing?.let{
+            it.isChange.set(true)
+            isRunning.set(true)
+        }
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
+        scope.cancel()
         isRunning.set(false)
         Log.i("SV", "surfaceDestroyed")
     }
     fun set(thing: T){
         isRunning.set(true)
         this.thing = thing
-        GlobalScope.launch {
+        scope.launch {
             send(thing)
         }
     }
-    protected suspend fun send(thing: T){
+    protected fun send(thing: T){
         var canvas:Canvas?=null
         try{
             canvas = surfaceHolder.lockCanvas(null)
@@ -83,23 +93,29 @@ open class CustomCanvas<T:OnDrawListener>(context: Context, attributeSet: Attrib
         catch(e:IllegalArgumentException) {
         }
         finally {
-            if(canvas!=null){
-                thing.draw(canvas)
-                surfaceHolder.unlockCanvasAndPost(canvas!!)
+            canvas?.let{
+                if(thing.draw(it))
+                    surfaceHolder.unlockCanvasAndPost(it)
             }
         }
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
-        GlobalScope.async(Dispatchers.Default) {
+        Log.i("SV", "surfaceCreated")
+
+        scope.launch{
             while(isRunning.get())
-                send(thing!!)
+                thing?.let{
+                    if(it.isChange.get()){
+                        send(it)
+                        it.isChange.set(false)
+                    }
+                }
         }
     }
 
     fun getCanvas():Canvas?{
         return surfaceHolder.lockCanvas(null)
-
     }
     fun setCanvas(canvas: Canvas){
         surfaceHolder.unlockCanvasAndPost(canvas)
@@ -128,19 +144,21 @@ fun Canvas.drawKanji(text: String, cx: Float, cy: Float, width: Float, height: F
     TreeMap<Int, Int>()
 }
 
-class TestCase:OnDrawListener {
+class TestCase() :OnDrawListener {
     private var draw = true
     private val en = ArrayList<Entity>()
     private var result:Bitmap? = null
     var kanji = ""
+    override val isChange = AtomicBoolean(true)
+
     fun getIdList():List<Int>{
         return en.map { it.getID() }
     }
     fun add(kanji :KanjiKey){
         en.add(Entity(kanji))
+        isChange.set(true)
     }
     fun check():Boolean{
-
         var trueResult = Bitmap.createBitmap(result!!)
         val c = Canvas(trueResult)
         c.drawColor(Color.WHITE)
@@ -182,9 +200,9 @@ class TestCase:OnDrawListener {
         Log.i("result", "${sqrt(firstDis)}" + " ${sqrt(secondDis)} " + count*100/(trueResult.width*trueResult.height))
         return count*100/(trueResult.width*trueResult.height) > 50
     }
-    override fun draw(canvas: Canvas) {
+    override fun draw(canvas: Canvas):Boolean {
         if(!draw)
-            return
+            return false
         if(result == null)
             result = Bitmap.createBitmap(canvas.width, canvas.height, Bitmap.Config.ARGB_8888)
         val tempCanvas = Canvas(result!!)
@@ -193,8 +211,8 @@ class TestCase:OnDrawListener {
             en.drawEntity(tempCanvas)
         }
         canvas.drawBitmap(result!!, 0f,0f, Paint())
+        return true
     }
-
     override fun sendTouch(event: MotionEvent) {
         val point = PointF(event.x,event.y)
         when(event.action){
@@ -247,8 +265,8 @@ class TestCase:OnDrawListener {
 
     fun clean() {
         en.clear()
+        isChange.set(true)
     }
-
 
     class Entity(private val kanji: KanjiKey){
         var isSelected:Boolean = false
@@ -263,37 +281,44 @@ class TestCase:OnDrawListener {
         private var canvasWidth = 0f
 
         init{
-            setBorder()
             mainBitmap = crop(drawTextBitmap(kanji.hieroglyph,300,300))
+            setBorder()
         }
+
         private fun setBorder() {
             GlobalScope.async(Dispatchers.Default) {
                 pointsAnchor.clear()
                 pointsAnchor.add(position)
-                pointsAnchor.add(PointF(position.x, position.y+mainBitmap.height.toFloat()))
-                pointsAnchor.add(PointF(position.x+mainBitmap.width.toFloat(), position.y+ mainBitmap.height.toFloat()))
-                pointsAnchor.add(PointF(position.x+mainBitmap.width.toFloat(), position.y))
-
+                pointsAnchor.add(PointF(position.x, position.y + mainBitmap.height.toFloat()))
+                pointsAnchor.add(
+                    PointF(
+                        position.x + mainBitmap.width.toFloat(),
+                        position.y + mainBitmap.height.toFloat()
+                    )
+                )
+                pointsAnchor.add(PointF(position.x + mainBitmap.width.toFloat(), position.y))
+            }
+            GlobalScope.async(Dispatchers.Default) {
                 points.clear()
                 points.add(position.x)
                 points.add(position.y)
                 points.add(position.x)
-                points.add(position.y+mainBitmap.height.toFloat())
+                points.add(position.y + mainBitmap.height.toFloat())
 
-                points.add(position.x+mainBitmap.width.toFloat())
-                points.add(position.y+mainBitmap.height.toFloat())
-                points.add(position.x+mainBitmap.width.toFloat())
+                points.add(position.x + mainBitmap.width.toFloat())
+                points.add(position.y + mainBitmap.height.toFloat())
+                points.add(position.x + mainBitmap.width.toFloat())
                 points.add(position.y)
 
-                points.add(position.x+mainBitmap.width.toFloat())
+                points.add(position.x + mainBitmap.width.toFloat())
                 points.add(position.y)
                 points.add(position.x)
                 points.add(position.y)
 
                 points.add(position.x)
-                points.add(position.y+mainBitmap.height.toFloat())
-                points.add(position.x+mainBitmap.width.toFloat())
-                points.add(position.y+mainBitmap.height.toFloat())
+                points.add(position.y + mainBitmap.height.toFloat())
+                points.add(position.x + mainBitmap.width.toFloat())
+                points.add(position.y + mainBitmap.height.toFloat())
             }
 
         }
@@ -373,6 +398,7 @@ class TestCase:OnDrawListener {
         }
 
     }
+
 }
 fun crop(origin:Bitmap) :Bitmap{
     val BLACK = -16777216
@@ -410,6 +436,7 @@ fun drawTextBitmap(str: String, width: Int, height: Int):Bitmap{
 
 
 class Tree<T>(rootData: T):OnDrawListener{
+    override val isChange = AtomicBoolean(true)
     private var root = Node<T>()
     private var maxDepth:Int = 1
     private val points:ArrayList<PointF>
@@ -452,6 +479,7 @@ class Tree<T>(rootData: T):OnDrawListener{
             }
             maxDepth = list.max()!!
         }
+
         return maxDepth
     }
     private fun getNextRootLevel(level: Int, children: Node<T>):Int{
@@ -503,7 +531,7 @@ class Tree<T>(rootData: T):OnDrawListener{
         }
     }
 
-    override fun draw(canvas: Canvas) {
+    override fun draw(canvas: Canvas):Boolean {
         canvas.drawColor(Color.WHITE)
         setCords(canvas.width.toFloat(), canvas.height.toFloat())
         val width = canvas.width/(getChildNum()).toFloat()
@@ -517,6 +545,7 @@ class Tree<T>(rootData: T):OnDrawListener{
         root.children!!.forEach {
             canvas.drawKanji(it.data.toString(), it.floatX, it.floatY, width, height)
         }
+        return true
     }
 
     override fun sendTouch(event: MotionEvent) {
