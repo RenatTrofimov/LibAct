@@ -39,7 +39,6 @@ class CreateNewTest : AppCompatActivity() {
                         shit()
                     }
                     dialogMessage = DialogMessage(this, "Создание теста", "Создание теста...")
-                    dialogMessage.positiveAction {  }
                     dialogMessage.show()
                 }else{
                     dialogMessage = DialogMessage(this, "Предупреждение", "В тесте должен быть хотя бы один вопрос!")

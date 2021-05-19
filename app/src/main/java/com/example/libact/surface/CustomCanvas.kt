@@ -32,22 +32,27 @@ class CustomCanvasForTest(context: Context, attributeSet: AttributeSet): CustomC
         }
         return super.onTouchEvent(event)
     }
-    override fun surfaceCreated(holder: SurfaceHolder?) {
+
+    override fun surfaceCreated(holder: SurfaceHolder) {
         super.surfaceCreated(holder)
         setOnClickListener{
             scope.launch {
                 send(thing!!)
             }
         }
+        send(thing!!)
     }
+
 }
 class CustomCanvasForTree(context: Context, attributeSet: AttributeSet): CustomCanvas<Tree<String>>(context, attributeSet){
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         return super.onTouchEvent(event)
     }
-    override fun surfaceCreated(holder: SurfaceHolder?) {
+
+    override fun surfaceCreated(holder: SurfaceHolder) {
         render()
     }
+
     private fun render(){
         scope.launch {
             send(thing!!)
@@ -65,19 +70,7 @@ open class CustomCanvas<T:OnDrawListener>(context: Context, attributeSet: Attrib
         this.surfaceHolder.addCallback(this)
         surfaceHolder.setFormat(PixelFormat.TRANSPARENT)
     }
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-        Log.i("SV", "surfaceChanged")
-        thing?.let{
-            it.isChange.set(true)
-            isRunning.set(true)
-        }
-    }
 
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        scope.cancel()
-        isRunning.set(false)
-        Log.i("SV", "surfaceDestroyed")
-    }
     fun set(thing: T){
         isRunning.set(true)
         this.thing = thing
@@ -100,9 +93,17 @@ open class CustomCanvas<T:OnDrawListener>(context: Context, attributeSet: Attrib
         }
     }
 
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        Log.i("SV", "surfaceCreated")
 
+    fun getCanvas():Canvas?{
+        return surfaceHolder.lockCanvas(null)
+    }
+    fun setCanvas(canvas: Canvas){
+        surfaceHolder.unlockCanvasAndPost(canvas)
+    }
+
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        Log.i("SV", "surfaceCreated")
+        isRunning.set(true)
         scope.launch{
             while(isRunning.get())
                 thing?.let{
@@ -114,11 +115,18 @@ open class CustomCanvas<T:OnDrawListener>(context: Context, attributeSet: Attrib
         }
     }
 
-    fun getCanvas():Canvas?{
-        return surfaceHolder.lockCanvas(null)
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+        Log.i("SV", "surfaceChanged")
+        thing?.let{
+            it.isChange.set(true)
+            isRunning.set(true)
+        }
     }
-    fun setCanvas(canvas: Canvas){
-        surfaceHolder.unlockCanvasAndPost(canvas)
+
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        scope.cancel()
+        isRunning.set(false)
+        Log.i("SV", "surfaceDestroyed")
     }
 }
 
@@ -145,7 +153,6 @@ fun Canvas.drawKanji(text: String, cx: Float, cy: Float, width: Float, height: F
 }
 
 class TestCase() :OnDrawListener {
-    private var draw = true
     private val en = ArrayList<Entity>()
     private var result:Bitmap? = null
     var kanji = ""
@@ -201,8 +208,6 @@ class TestCase() :OnDrawListener {
         return count*100/(trueResult.width*trueResult.height) > 50
     }
     override fun draw(canvas: Canvas):Boolean {
-        if(!draw)
-            return false
         if(result == null)
             result = Bitmap.createBitmap(canvas.width, canvas.height, Bitmap.Config.ARGB_8888)
         val tempCanvas = Canvas(result!!)

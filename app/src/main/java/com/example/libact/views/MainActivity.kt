@@ -4,10 +4,12 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.example.libact.R
 import com.example.libact.modelsview.LibViewModel
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 
 class MainActivity : AppCompatActivity() {
     private var tabSelected = 0
