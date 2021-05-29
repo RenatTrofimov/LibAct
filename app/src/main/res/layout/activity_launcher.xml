@@ -7,5 +7,13 @@
     android:theme="@style/ThemeOverlay.LibAct.FullscreenContainer"
     tools:context=".views.Launcher"
     android:gravity="center">
-    <include layout="@layout/lib_item"/>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:transitionName="shared_element_container">
+        <include layout="@layout/lib_item" />
+    </FrameLayout>
+
+
 </LinearLayout>

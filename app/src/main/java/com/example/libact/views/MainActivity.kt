@@ -5,16 +5,37 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.Window
+import android.widget.ViewAnimator
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.ContentFrameLayout
+import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProviders
 import com.example.libact.R
 import com.example.libact.modelsview.LibViewModel
+import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 
 class MainActivity : AppCompatActivity() {
     private var tabSelected = 0
     private val tabSelectedStr = "tabSelectedStr"
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+
+        // Set the transition name, which matches Activity A’s start view transition name, on
+        // the root view.
+        findViewById<View>(android.R.id.content).transitionName = "shared_element_container"
+
+        // Attach a callback used to receive the shared elements from Activity A to be
+        // used by the container transform transition.
+        setEnterSharedElementCallback(MaterialContainerTransformSharedElementCallback())
+
+        // Set this Activity’s enter and return transition to a MaterialContainerTransform
+        window.sharedElementEnterTransition = MaterialContainerTransform().apply {
+            addTarget(android.R.id.content)
+            duration = 300L
+        }
+
         super.onCreate(savedInstanceState)
         if(savedInstanceState!= null){
             tabSelected = savedInstanceState.getInt(tabSelectedStr)
