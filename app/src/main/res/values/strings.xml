@@ -15,5 +15,8 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="kanjiExample">恋</string>
+    <string name="input_tests_name">Input tests name</string>
+    <string name="bottom_title_tests">tests</string>
+    <string name="bottom_title_library">library</string>
 
 </resources>

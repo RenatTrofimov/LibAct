@@ -15,5 +15,18 @@
         <item name="android:background">@color/black_overlay</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
     </style>
+    <style name="Theme.MyApp.Main" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textViewStyle">@style/Widget.MyApp.TextViewStyle</item>
+        <item name="cardViewStyle">@style/Widget.MyApp.CardViewStyle</item>
+    </style>
+    <style name="Widget.MyApp.CardViewStyle" parent="CardView">
+        <item name="android:gravity">center</item>
+        <item name="android:translationZ">0.1dp</item>
+        <item name="android:layout_margin">@dimen/card_layout_margin</item>
+        <item name="cardCornerRadius">@dimen/cardCornerRadius</item>
+    </style>
 
+    <style name="Widget.MyApp.TextViewStyle" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textSize">@dimen/itemTextSize</item>
+    </style>
 </resources>

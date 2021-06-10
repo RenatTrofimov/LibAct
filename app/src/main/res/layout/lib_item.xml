@@ -6,14 +6,10 @@
     android:gravity="center"
     >
 
-    <androidx.cardview.widget.CardView
-
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:translationZ="2dp"
-        android:layout_margin="5dp"
-        app:cardCornerRadius="@dimen/cardCornerRadius"
+        android:layout_margin="@dimen/card_layout_margin"
         >
         <LinearLayout
             android:background="?selectableItemBackground"
@@ -27,10 +23,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/kanjiExample"
-                android:textSize="@dimen/itemTextSize"
                 android:paddingHorizontal="10dp"
                 />
         </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

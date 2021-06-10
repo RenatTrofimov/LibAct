@@ -26,8 +26,7 @@ class MainActivity : AppCompatActivity() {
         // the root view.
         findViewById<View>(android.R.id.content).transitionName = "shared_element_container"
 
-        // Attach a callback used to receive the shared elements from Activity A to be
-        // used by the container transform transition.
+0        // used by the container transform transition.
         setEnterSharedElementCallback(MaterialContainerTransformSharedElementCallback())
 
         // Set this Activity’s enter and return transition to a MaterialContainerTransform

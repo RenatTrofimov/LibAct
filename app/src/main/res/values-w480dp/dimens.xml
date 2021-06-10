@@ -7,4 +7,5 @@
     <dimen name="spanCount">3</dimen>
     <dimen name="TestCanvas">225dp</dimen>
     <dimen name="itemTextSize">40sp</dimen>
+    <dimen name="card_layout_margin">5dp</dimen>
 </resources>

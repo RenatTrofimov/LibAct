@@ -3,8 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/main_bg_cl"
     tools:context=".CreateNewTest">
     <LinearLayout
+        android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -12,24 +15,37 @@
             android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Input tests name"/>
-        <fragment
-            android:id="@+id/selectedItemsFragment"
+            android:hint="@string/input_tests_name"/>
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="40"
-            class = "com.example.libact.SelectedItemsFragment"/>
-        <fragment
-            android:id="@+id/selectableItemsFragment"
+            android:layout_marginBottom="3dp">
+            <fragment
+                android:id="@+id/selectedItemsFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                class = "com.example.libact.SelectedItemsFragment"/>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="40"
-            class = "com.example.libact.SelectableFragment"/>
+            >
+            <fragment
+                android:id="@+id/selectableItemsFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                class = "com.example.libact.SelectableFragment"/>
+        </androidx.cardview.widget.CardView>
+
         <Button
             android:id="@+id/create_test_btn"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="7"
-            android:text="@string/create_test"/>
+            android:text="@string/create_test"
+            app:strokeColor="@color/main_tx_cl"
+            app:strokeWidth="5dp"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

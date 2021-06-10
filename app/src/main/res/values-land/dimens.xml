@@ -2,4 +2,5 @@
 
 <resources>
     <dimen name="spanCount">4</dimen>
+    <dimen name="card_layout_margin">5dp</dimen>
 </resources>
